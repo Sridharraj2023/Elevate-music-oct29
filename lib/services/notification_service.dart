@@ -15,8 +15,9 @@ class NotificationService {
 
   // Lazily initialized after Firebase.initializeApp()
   late FirebaseMessaging _firebaseMessaging;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
-  
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
+
   String? _fcmToken;
   bool _isInitialized = false;
 
@@ -30,19 +31,19 @@ class NotificationService {
       await Firebase.initializeApp();
       // Now it's safe to access FirebaseMessaging.instance
       _firebaseMessaging = FirebaseMessaging.instance;
-      
+
       // Initialize local notifications
       await _initializeLocalNotifications();
-      
+
       // Request permissions
       await _requestPermissions();
-      
+
       // Get FCM token
       await _getFCMToken();
-      
+
       // Configure message handlers
       _configureMessageHandlers();
-      
+
       _isInitialized = true;
       print('Notification service initialized successfully');
     } catch (e) {
@@ -53,19 +54,19 @@ class NotificationService {
   Future<void> _initializeLocalNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    
+
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
-        );
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
-          android: initializationSettingsAndroid,
-          iOS: initializationSettingsIOS,
-        );
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
 
     await _localNotifications.initialize(
       initializationSettings,
@@ -99,11 +100,11 @@ class NotificationService {
     try {
       _fcmToken = await _firebaseMessaging.getToken();
       print('FCM Token: $_fcmToken');
-      
+
       // Save token to SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('fcm_token', _fcmToken ?? '');
-      
+
       // Send token to backend
       await _sendTokenToBackend();
     } catch (e) {
@@ -117,11 +118,12 @@ class NotificationService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      
+
       if (token == null) return;
 
       final response = await http.post(
-        Uri.parse('${ApiConstants.resolvedApiUrl}/notifications/register-token'),
+        Uri.parse(
+            '${ApiConstants.resolvedApiUrl}/notifications/register-token'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -144,17 +146,17 @@ class NotificationService {
   void _configureMessageHandlers() {
     // Handle background messages
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    
+
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-    
+
     // Handle notification taps when app is in background
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
   }
 
   Future<void> _handleForegroundMessage(RemoteMessage message) async {
     print('Received foreground message: ${message.notification?.title}');
-    
+
     // Show local notification for foreground messages
     await _showLocalNotification(
       message.notification?.title ?? 'Elevate',
@@ -198,7 +200,8 @@ class NotificationService {
     String body,
     Map<String, dynamic> data,
   ) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       'subscription_reminders',
       'Subscription Reminders',
       channelDescription: 'Notifications for subscription expiry reminders',
@@ -233,10 +236,12 @@ class NotificationService {
     required DateTime scheduledTime,
     Map<String, dynamic>? data,
   }) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       'subscription_reminders',
       'Subscription Reminders',
-      channelDescription: 'Scheduled notifications for subscription expiry reminders',
+      channelDescription:
+          'Scheduled notifications for subscription expiry reminders',
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
@@ -260,7 +265,8 @@ class NotificationService {
       tz.TZDateTime.from(scheduledTime, tz.local),
       notificationDetails,
       payload: jsonEncode(data ?? {}),
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
@@ -288,7 +294,7 @@ class NotificationService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      
+
       if (token == null) return;
 
       final response = await http.put(
@@ -309,7 +315,8 @@ class NotificationService {
       if (response.statusCode == 200) {
         print('Notification preferences updated successfully');
       } else {
-        print('Failed to update notification preferences: ${response.statusCode}');
+        print(
+            'Failed to update notification preferences: ${response.statusCode}');
       }
     } catch (e) {
       print('Error updating notification preferences: $e');
@@ -321,7 +328,7 @@ class NotificationService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      
+
       if (token == null) return null;
 
       final response = await http.get(
@@ -352,11 +359,12 @@ class NotificationService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      
+
       if (token == null) return [];
 
       final response = await http.get(
-        Uri.parse('${ApiConstants.resolvedApiUrl}/notifications/history?page=$page&limit=$limit'),
+        Uri.parse(
+            '${ApiConstants.resolvedApiUrl}/notifications/history?page=$page&limit=$limit'),
         headers: {
           'Authorization': 'Bearer $token',
         },

@@ -25,14 +25,20 @@ class MusicList extends StatelessWidget {
           return ApiConstants.resolvedApiUrl.replaceAll('/api', '') + url;
         }
         final uri = Uri.parse(url);
-        if (uri.host.startsWith('192.168.') || uri.host == 'localhost' || uri.host == '127.0.0.1' || uri.host.contains('local')) {
+        if (uri.host.startsWith('192.168.') ||
+            uri.host == 'localhost' ||
+            uri.host == '127.0.0.1' ||
+            uri.host.contains('local')) {
           final prod = ApiConstants.resolvedApiUrl.replaceAll('/api', '');
-          final replaced = url.replaceAll(uri.host, Uri.parse(prod).host).replaceAll('http://', 'https://');
+          final replaced = url
+              .replaceAll(uri.host, Uri.parse(prod).host)
+              .replaceAll('http://', 'https://');
           return replaced.replaceAll(':${uri.port}', '');
         }
       } catch (_) {}
       return url;
     }
+
     return SizedBox(
       height: 160,
       child: ListView(
@@ -49,7 +55,7 @@ class MusicList extends StatelessWidget {
                         print("🎵 Music item tapped: ${item.title}");
                         print("🎵 File URL: ${item.fileUrl}");
                         print("🎵 Is Binaural: $isBinaural");
-                        
+
                         if (isBinaural) {
                           // Play Binaural
                           print("🎧 Setting binaural playing state");
@@ -59,21 +65,22 @@ class MusicList extends StatelessWidget {
                           print("🎵 Setting music playing state");
                           bottomBarController.isMusicPlaying.value = true;
                         }
-                        
+
                         log(item.fileUrl);
-                        
+
                         if (isBinaural) {
-                          print("🎧 Calling playBinaural with: ${item.fileUrl}");
+                          print(
+                              "🎧 Calling playBinaural with: ${item.fileUrl}");
                           // Test with a known working URL if the API URL fails
-                          final testUrl = item.fileUrl.isNotEmpty 
-                              ? item.fileUrl 
+                          final testUrl = item.fileUrl.isNotEmpty
+                              ? item.fileUrl
                               : "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav";
                           bottomBarController.playBinaural(testUrl);
                         } else {
                           print("🎵 Calling playMusic with: ${item.fileUrl}");
                           // Test with a known working URL if the API URL fails
-                          final testUrl = item.fileUrl.isNotEmpty 
-                              ? item.fileUrl 
+                          final testUrl = item.fileUrl.isNotEmpty
+                              ? item.fileUrl
                               : "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav";
                           bottomBarController.playMusic(testUrl);
                         }
@@ -119,7 +126,8 @@ class MusicList extends StatelessWidget {
                           },
                           errorBuilder: (context, error, stackTrace) {
                             print('Image load error for ${item.title}: $error');
-                            print('Image URL: ${_resolveImageUrl(item.imageUrl)}');
+                            print(
+                                'Image URL: ${_resolveImageUrl(item.imageUrl)}');
                             return Container(
                               width: 100,
                               height: 100,

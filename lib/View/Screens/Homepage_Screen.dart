@@ -76,8 +76,9 @@ class _HomePageState extends State<HomePage>
 
       // _binauralItems = _homeController.fetchBinauralMusic();
       _binauralItems2 = await _homeController.fetchBinauralMusic();
-      print("Homepage: Binaural music fetched - ${_binauralItems2?.length ?? 0} items");
-      
+      print(
+          "Homepage: Binaural music fetched - ${_binauralItems2?.length ?? 0} items");
+
       setState(() {
         isLoading = false;
       });
@@ -107,15 +108,17 @@ class _HomePageState extends State<HomePage>
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userEmail = prefs.getString('email');
-      
+
       if (userEmail != null) {
-        final SubscriptionController _subscriptionController = SubscriptionController();
-        final status = await _subscriptionController.checkSubscriptionStatus(userEmail);
-        
+        final SubscriptionController _subscriptionController =
+            SubscriptionController();
+        final status =
+            await _subscriptionController.checkSubscriptionStatus(userEmail);
+
         // Check if user has made a recent payment as a fallback
         String? paymentDateStr = prefs.getString('payment_date');
         bool hasRecentPayment = false;
-        
+
         if (paymentDateStr != null) {
           try {
             DateTime paymentDate = DateTime.parse(paymentDateStr);
@@ -125,11 +128,13 @@ class _HomePageState extends State<HomePage>
             print("Error parsing payment date during access check: $e");
           }
         }
-        
-        bool hasValidSubscription = (status != null && status['isActive'] == true) || hasRecentPayment;
-        
+
+        bool hasValidSubscription =
+            (status != null && status['isActive'] == true) || hasRecentPayment;
+
         if (!hasValidSubscription) {
-          print("Homepage: User does not have valid subscription - showing warning");
+          print(
+              "Homepage: User does not have valid subscription - showing warning");
           // Show warning but don't redirect immediately
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -344,10 +349,8 @@ class _HomePageState extends State<HomePage>
                           ),
                         ],
                       ),
-                      Image.asset(
-                          'assets/images/Elevate Logo White.png',
-                          height: 60,
-                          width: 60)
+                      Image.asset('assets/images/Elevate Logo White.png',
+                          height: 60, width: 60)
                     ],
                   ),
                   const SizedBox(height: 20),

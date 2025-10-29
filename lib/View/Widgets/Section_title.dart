@@ -7,7 +7,8 @@ class SectionTitle extends StatelessWidget {
   final String? subtitle;
   final bool showIcon;
 
-  const SectionTitle({super.key, required this.title, this.subtitle, this.showIcon = false});
+  const SectionTitle(
+      {super.key, required this.title, this.subtitle, this.showIcon = false});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,10 @@ class SectionTitle extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
             ),
             if (subtitle != null)
               Text(

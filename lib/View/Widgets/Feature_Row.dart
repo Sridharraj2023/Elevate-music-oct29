@@ -7,7 +7,7 @@ class FeatureRow extends StatelessWidget {
   final bool isEmphasized;
 
   const FeatureRow({
-    required this.label, 
+    required this.label,
     required this.value,
     this.isEmphasized = true,
   });
@@ -26,15 +26,20 @@ class FeatureRow extends StatelessWidget {
               text: TextSpan(
                 style: TextStyle(
                   fontSize: 12,
-                  color: isEmphasized ? Colors.white : Colors.white.withOpacity(0.5),
+                  color: isEmphasized
+                      ? Colors.white
+                      : Colors.white.withOpacity(0.5),
                 ),
                 children: [
                   TextSpan(text: label),
                   TextSpan(
                     text: value,
                     style: TextStyle(
-                      fontWeight: isEmphasized ? FontWeight.bold : FontWeight.normal,
-                      color: isEmphasized ? Colors.white : Colors.white.withOpacity(0.5),
+                      fontWeight:
+                          isEmphasized ? FontWeight.bold : FontWeight.normal,
+                      color: isEmphasized
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.5),
                     ),
                   ),
                 ],

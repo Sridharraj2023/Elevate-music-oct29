@@ -77,17 +77,17 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () => Navigator.pop(context),
                     ),
-                      Expanded(
-                        child: Text(
-                          'Terms & Conditions',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: screenWidth * 0.05,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                    Expanded(
+                      child: Text(
+                        'Terms & Conditions',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: screenWidth * 0.05,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -113,7 +113,8 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                 padding: EdgeInsets.all(screenWidth * 0.04),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context, true); // Return true to indicate agreement
+                    Navigator.pop(
+                        context, true); // Return true to indicate agreement
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
@@ -206,7 +207,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
               color: Colors.black87,
             ),
           ),
-          
+
           SizedBox(height: screenWidth * 0.02),
 
           // Version and Date Info
@@ -232,7 +233,8 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                   child: Text(
                     'Version ${_terms!['version']} • Effective ${_formatDate(_terms!['effectiveDate'])}',
                     style: TextStyle(
-                      fontSize: ResponsiveHelper.getResponsiveFontSize(context, 12),
+                      fontSize:
+                          ResponsiveHelper.getResponsiveFontSize(context, 12),
                       color: Colors.black54,
                     ),
                   ),
@@ -248,30 +250,35 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
             data: _terms!['content'] ?? '',
             style: {
               "body": Style(
-                fontSize: FontSize(ResponsiveHelper.getResponsiveFontSize(context, 14)),
+                fontSize: FontSize(
+                    ResponsiveHelper.getResponsiveFontSize(context, 14)),
                 lineHeight: const LineHeight(1.6),
                 color: Colors.black87,
               ),
               "h1": Style(
-                fontSize: FontSize(ResponsiveHelper.getResponsiveFontSize(context, 18)),
+                fontSize: FontSize(
+                    ResponsiveHelper.getResponsiveFontSize(context, 18)),
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
                 margin: Margins.only(top: 16, bottom: 8),
               ),
               "h2": Style(
-                fontSize: FontSize(ResponsiveHelper.getResponsiveFontSize(context, 16)),
+                fontSize: FontSize(
+                    ResponsiveHelper.getResponsiveFontSize(context, 16)),
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
                 margin: Margins.only(top: 14, bottom: 7),
               ),
               "h3": Style(
-                fontSize: FontSize(ResponsiveHelper.getResponsiveFontSize(context, 15)),
+                fontSize: FontSize(
+                    ResponsiveHelper.getResponsiveFontSize(context, 15)),
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
                 margin: Margins.only(top: 12, bottom: 6),
               ),
               "p": Style(
-                fontSize: FontSize(ResponsiveHelper.getResponsiveFontSize(context, 14)),
+                fontSize: FontSize(
+                    ResponsiveHelper.getResponsiveFontSize(context, 14)),
                 margin: Margins.only(bottom: 12),
               ),
               "ul": Style(
@@ -316,4 +323,3 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
     }
   }
 }
-

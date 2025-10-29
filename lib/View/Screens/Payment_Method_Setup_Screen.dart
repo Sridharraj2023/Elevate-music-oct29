@@ -7,18 +7,21 @@ class PaymentMethodSetupScreen extends StatefulWidget {
   const PaymentMethodSetupScreen({super.key});
 
   @override
-  State<PaymentMethodSetupScreen> createState() => _PaymentMethodSetupScreenState();
+  State<PaymentMethodSetupScreen> createState() =>
+      _PaymentMethodSetupScreenState();
 }
 
 class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
-  final SubscriptionController _subscriptionController = SubscriptionController();
+  final SubscriptionController _subscriptionController =
+      SubscriptionController();
   bool _isLoading = false;
   bool _setupComplete = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF6F41F3), // Set scaffold background to prevent overflow
+      backgroundColor: const Color(
+          0xFF6F41F3), // Set scaffold background to prevent overflow
       appBar: AppBar(
         title: const Text('Setup Payment Method'),
         backgroundColor: const Color(0xFF6F41F3),
@@ -106,9 +109,9 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Benefits Card
                 Container(
                   width: double.infinity,
@@ -159,9 +162,9 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Setup Button
                 SizedBox(
                   width: double.infinity,
@@ -169,7 +172,8 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
                     onPressed: _isLoading ? null : _setupPaymentMethod,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFEAE2FF), // light purple
-                      foregroundColor: const Color(0xFF6F41F3), // dark purple text
+                      foregroundColor:
+                          const Color(0xFF6F41F3), // dark purple text
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -182,7 +186,8 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6F41F3)),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(0xFF6F41F3)),
                             ),
                           )
                         : const Text(
@@ -194,9 +199,9 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
                           ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Cancel Button details
                 SizedBox(
                   width: double.infinity,
@@ -219,7 +224,7 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
                     ),
                   ),
                 ),
-                
+
                 if (_setupComplete) ...[
                   const SizedBox(height: 24),
                   Container(
@@ -312,16 +317,17 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
       }
 
       // Call the controller method to setup payment method via Stripe
-      final success = await _subscriptionController.ensureDefaultPaymentMethod(context);
-      
+      final success =
+          await _subscriptionController.ensureDefaultPaymentMethod(context);
+
       if (success) {
         setState(() {
           _setupComplete = true;
           _isLoading = false;
         });
-        
+
         // Success message is shown via _setupComplete UI widget
-        
+
         // Auto-close after 2 seconds
         Future.delayed(const Duration(seconds: 2), () {
           if (mounted) {
@@ -332,11 +338,12 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
         setState(() {
           _isLoading = false;
         });
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Failed to setup payment method. Please try again.'),
+              content:
+                  Text('Failed to setup payment method. Please try again.'),
               backgroundColor: Colors.red,
             ),
           );
@@ -346,7 +353,7 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
       setState(() {
         _isLoading = false;
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -358,28 +365,27 @@ class _PaymentMethodSetupScreenState extends State<PaymentMethodSetupScreen> {
     }
   }
 
-
   Future<bool> _showConsentDialog() async {
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Payment Method Consent'),
-        content: const Text(
-          'I authorize Elevate to securely store my payment method for automatic subscription renewals. '
-          'My card details will be encrypted and processed securely by Stripe. '
-          'I can remove or change this payment method anytime in my account settings.'
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Payment Method Consent'),
+            content: const Text(
+                'I authorize Elevate to securely store my payment method for automatic subscription renewals. '
+                'My card details will be encrypted and processed securely by Stripe. '
+                'I can remove or change this payment method anytime in my account settings.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('I Agree'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('I Agree'),
-          ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
   }
 }

@@ -179,29 +179,29 @@ class BottomBarController extends GetxController {
   Future<void> playBinaural(String assetPath) async {
     try {
       print("🎧 Attempting to play binaural: $assetPath");
-      
+
       if (assetPath.isEmpty) {
         print("❌ Error: Binaural URL is empty");
         return;
       }
-      
+
       binauralTrack.value = assetPath; // Set the binaural track path
-      
+
       // Convert local URLs to production URLs
       final finalUrl = _convertToProductionUrl(assetPath);
-      
+
       print("🎧 Setting URL for binaural player...");
       await binauralPlayer.setUrl(finalUrl); // Load audio file from URL
 
       print("🎧 Setting volume: ${binauralVolume.value}");
       binauralPlayer.setVolume(binauralVolume.value);
-      
+
       print("🎧 Starting playback...");
       await binauralPlayer.play();
-      
+
       isBinauralPlaying.value = true;
       hasBinauralPlayed.value = true;
-      
+
       print("✅ Binaural playback started successfully");
 
       // Update current index based on the track
@@ -210,11 +210,12 @@ class BottomBarController extends GetxController {
         currentBinauralIndex.value = index;
         print("🎧 Current binaural index: $index");
       }
-      
+
       // Listen for player state changes with more detailed monitoring
       binauralPlayer.playerStateStream.listen((state) {
-        print("🎧 Binaural player state: ${state.processingState}, playing: ${state.playing}");
-        
+        print(
+            "🎧 Binaural player state: ${state.processingState}, playing: ${state.playing}");
+
         if (state.processingState == ProcessingState.ready && state.playing) {
           print("🎧 ✅ Binaural is actually playing!");
         } else if (state.processingState == ProcessingState.loading) {
@@ -227,25 +228,24 @@ class BottomBarController extends GetxController {
           print("🎧 ⏸️ Binaural player is idle");
         }
       });
-      
+
       // Also listen for duration stream to confirm audio is loaded
       binauralPlayer.durationStream.listen((duration) {
         if (duration != null) {
           print("🎧 Audio duration: ${duration.inSeconds} seconds");
         }
       });
-      
     } catch (e) {
       print("❌ Error playing binaural: $e");
       print("❌ Error type: ${e.runtimeType}");
-      
+
       // More detailed error analysis
       if (e is PlayerException) {
         print("❌ PlayerException details:");
         print("   - Code: ${e.code}");
         print("   - Message: ${e.message}");
         print("   - URL that failed: $assetPath");
-        
+
         // Common PlayerException codes and their meanings
         switch (e.code) {
           case 0:
@@ -256,13 +256,15 @@ class BottomBarController extends GetxController {
             print("   - Server is down");
             print("   - Network connectivity issues");
             print("   - CORS issues");
-            
+
             // Check if this is a production server 500 error
             final finalUrl = _convertToProductionUrl(assetPath);
             if (ApiConstants.isApiServerUrl(finalUrl)) {
-              print("💡 SOLUTION: This file needs to be uploaded to production server");
+              print(
+                  "💡 SOLUTION: This file needs to be uploaded to production server");
               print("   File: ${Uri.parse(finalUrl).pathSegments.last}");
-              print("   Upload this file from local server to production server");
+              print(
+                  "   Upload this file from local server to production server");
               print("   Local path: $assetPath");
               print("   Production path: $finalUrl");
             }
@@ -277,7 +279,7 @@ class BottomBarController extends GetxController {
             print("❌ Unknown PlayerException code: ${e.code}");
         }
       }
-      
+
       // Reset states on error
       isBinauralPlaying.value = false;
       binauralTrack.value = '';
@@ -288,12 +290,12 @@ class BottomBarController extends GetxController {
   Future<void> playMusic(String assetPath) async {
     try {
       print("🎵 Attempting to play music: $assetPath");
-      
+
       if (assetPath.isEmpty) {
         print("❌ Error: Music URL is empty");
         return;
       }
-      
+
       // Test URL accessibility
       print("🎵 Testing URL accessibility...");
       try {
@@ -305,24 +307,24 @@ class BottomBarController extends GetxController {
       } catch (uriError) {
         print("❌ Invalid URL format: $uriError");
       }
-      
+
       musicTrack.value = assetPath; // Set the music track path
-      
+
       // Convert local URLs to production URLs
       final finalUrl = _convertToProductionUrl(assetPath);
-      
+
       print("🎵 Setting URL for music player...");
       await musicPlayer.setUrl(finalUrl); // Load audio file from URL
-      
+
       print("🎵 Setting volume: ${musicVolume.value}");
       musicPlayer.setVolume(musicVolume.value);
-      
+
       print("🎵 Starting playback...");
       await musicPlayer.play();
-      
+
       isMusicPlaying.value = true;
       hasMusicPlayed.value = true;
-      
+
       print("✅ Music playback started successfully");
 
       // Update current index based on the track
@@ -331,10 +333,11 @@ class BottomBarController extends GetxController {
         currentMusicIndex.value = index;
         print("🎵 Current music index: $index");
       }
-      
+
       // Listen for player state changes with more detailed monitoring
       musicPlayer.playerStateStream.listen((state) {
-        print("🎵 Music player state: ${state.processingState}, playing: ${state.playing}");
+        print(
+            "🎵 Music player state: ${state.processingState}, playing: ${state.playing}");
         if (state.processingState == ProcessingState.ready && state.playing) {
           print("🎵 ✅ Music is actually playing!");
         } else if (state.processingState == ProcessingState.loading) {
@@ -347,25 +350,24 @@ class BottomBarController extends GetxController {
           print("🎵 ⏸️ Music player is idle");
         }
       });
-      
+
       // Also listen for duration stream to confirm audio is loaded
       musicPlayer.durationStream.listen((duration) {
         if (duration != null) {
           print("🎵 Audio duration: ${duration.inSeconds} seconds");
         }
       });
-      
     } catch (e) {
       print("❌ Error playing music: $e");
       print("❌ Error type: ${e.runtimeType}");
-      
+
       // More detailed error analysis
       if (e is PlayerException) {
         print("❌ PlayerException details:");
         print("   - Code: ${e.code}");
         print("   - Message: ${e.message}");
         print("   - URL that failed: $assetPath");
-        
+
         // Common PlayerException codes and their meanings
         switch (e.code) {
           case 0:
@@ -376,13 +378,15 @@ class BottomBarController extends GetxController {
             print("   - Server is down");
             print("   - Network connectivity issues");
             print("   - CORS issues");
-            
+
             // Check if this is a production server 500 error
             final finalUrl = _convertToProductionUrl(assetPath);
             if (ApiConstants.isApiServerUrl(finalUrl)) {
-              print("💡 SOLUTION: This file needs to be uploaded to production server");
+              print(
+                  "💡 SOLUTION: This file needs to be uploaded to production server");
               print("   File: ${Uri.parse(finalUrl).pathSegments.last}");
-              print("   Upload this file from local server to production server");
+              print(
+                  "   Upload this file from local server to production server");
               print("   Local path: $assetPath");
               print("   Production path: $finalUrl");
             }
@@ -397,7 +401,7 @@ class BottomBarController extends GetxController {
             print("❌ Unknown PlayerException code: ${e.code}");
         }
       }
-      
+
       // Reset states on error
       isMusicPlaying.value = false;
       musicTrack.value = '';
@@ -563,7 +567,7 @@ class BottomBarController extends GetxController {
     print("🎵 Setting music playlist with ${music.length} items");
     musicPlaylist.value = music.map((item) => item.fileUrl).toList();
     musicPlaylists.value = music;
-    
+
     // Debug: Print first few music URLs and test them
     for (int i = 0; i < music.length && i < 3; i++) {
       print("🎵 Music $i: ${music[i].title} - ${music[i].fileUrl}");
@@ -574,50 +578,54 @@ class BottomBarController extends GetxController {
   /// Convert local URLs to production URLs with fallback
   String _convertToProductionUrl(String url) {
     if (url.isEmpty) return url;
-    
+
     try {
       // Handle relative URLs (starting with /uploads/)
       if (url.startsWith('/uploads/')) {
-        final productionUrl = '${ApiConstants.resolvedApiUrl.replaceAll('/api', '')}$url';
+        final productionUrl =
+            '${ApiConstants.resolvedApiUrl.replaceAll('/api', '')}$url';
         print("🔄 Converting relative URL to production URL");
         print("   Original: $url");
         print("   Production: $productionUrl");
         return productionUrl;
       }
-      
+
       final uri = Uri.parse(url);
-      
+
       // Check if it's a local IP address or localhost
-      if (uri.host.startsWith('192.168.') || uri.host.startsWith('10.') || 
-          uri.host == 'localhost' || uri.host == '127.0.0.1' || 
+      if (uri.host.startsWith('192.168.') ||
+          uri.host.startsWith('10.') ||
+          uri.host == 'localhost' ||
+          uri.host == '127.0.0.1' ||
           uri.host.contains('local')) {
         print("🔄 Converting local URL to production URL");
         print("   Original: $url");
-        
+
         // Get production base URL from API constants
-        final productionBaseUrl = ApiConstants.resolvedApiUrl.replaceAll('/api', '');
-        
+        final productionBaseUrl =
+            ApiConstants.resolvedApiUrl.replaceAll('/api', '');
+
         // Replace local server with production server
-        final productionUrl = url.replaceAll(uri.host, Uri.parse(productionBaseUrl).host);
+        final productionUrl =
+            url.replaceAll(uri.host, Uri.parse(productionBaseUrl).host);
         // Remove port number for production server
         final noPortUrl = productionUrl.replaceAll(':${uri.port}', '');
         // If it's HTTP, convert to HTTPS for production
         final finalUrl = noPortUrl.replaceAll('http://', 'https://');
-        
+
         print("   Production: $finalUrl");
         return finalUrl;
       }
-      
+
       // If it's already a production URL, return as is
       if (ApiConstants.isApiServerUrl(url)) {
         print("✅ Already using production URL: $url");
         return url;
       }
-      
     } catch (e) {
       print("❌ Error converting URL: $e");
     }
-    
+
     return url;
   }
 
@@ -632,16 +640,19 @@ class BottomBarController extends GetxController {
       print("❌ $name: URL is empty");
       return;
     }
-    
+
     try {
       final uri = Uri.parse(url);
       print("🔍 Testing $name URL: $url");
       print("   - Scheme: ${uri.scheme}");
       print("   - Host: ${uri.host}");
       print("   - Path: ${uri.path}");
-      
+
       // Check if it's a local IP address
-      if (uri.host.startsWith('192.168.') || uri.host.startsWith('10.') || uri.host == 'localhost' || uri.host == '127.0.0.1') {
+      if (uri.host.startsWith('192.168.') ||
+          uri.host.startsWith('10.') ||
+          uri.host == 'localhost' ||
+          uri.host == '127.0.0.1') {
         print("⚠️  WARNING: $name is using a local IP address (${uri.host})");
         print("   This may not be accessible from your device/emulator");
         print("   Solutions:");
@@ -650,7 +661,7 @@ class BottomBarController extends GetxController {
         print("   3. Deploy server to a public URL");
         print("   4. Use production API URL instead");
       }
-      
+
       // Test with a simple HTTP HEAD request to check if URL is accessible
       final response = await http.head(Uri.parse(url)).timeout(
         const Duration(seconds: 10),
@@ -660,7 +671,7 @@ class BottomBarController extends GetxController {
         },
       );
       print("   - HTTP Status: ${response.statusCode}");
-      
+
       if (response.statusCode == 200) {
         print("✅ $name: URL is accessible");
       } else {
@@ -668,11 +679,13 @@ class BottomBarController extends GetxController {
       }
     } catch (e) {
       print("❌ $name: URL test failed - $e");
-      
+
       // Provide specific solutions based on error type
-      if (e.toString().contains('timeout') || e.toString().contains('Connection refused')) {
+      if (e.toString().contains('timeout') ||
+          e.toString().contains('Connection refused')) {
         print("💡 Solution: Server is not reachable. Try:");
-        print("   1. Check if server is running on ${Uri.parse(url).host}:${Uri.parse(url).port}");
+        print(
+            "   1. Check if server is running on ${Uri.parse(url).host}:${Uri.parse(url).port}");
         print("   2. Use production API URL instead of local server");
         print("   3. Use ngrok: ngrok http 5000");
       }
@@ -683,7 +696,7 @@ class BottomBarController extends GetxController {
     print("🎧 Setting binaural playlist with ${binaural.length} items");
     binauralPlaylist.value = binaural.map((item) => item.fileUrl).toList();
     binauralPlaylists.value = binaural;
-    
+
     // Debug: Print first few binaural URLs and test them
     for (int i = 0; i < binaural.length && i < 3; i++) {
       print("🎧 Binaural $i: ${binaural[i].title} - ${binaural[i].fileUrl}");
@@ -696,7 +709,7 @@ class BottomBarController extends GetxController {
     try {
       // Get equalizer controller
       final equalizerController = Get.find<EqualizerController>();
-      
+
       if (!equalizerController.isEqualizerEnabled.value) {
         // If equalizer is disabled, reset to flat
         _resetAudioEffects();
@@ -707,27 +720,27 @@ class BottomBarController extends GetxController {
       // Note: just_audio doesn't have built-in equalizer support
       // This is a placeholder for future implementation with audio processing libraries
       final gains = equalizerController.equalizerGains.value;
-      
+
       // For now, we'll simulate the effect by adjusting volume slightly
       // In a real implementation, you would use audio processing libraries like:
       // - flutter_audio_processing
       // - audio_waveforms
       // - or native audio processing
-      
-      print('Applying equalizer settings: ${equalizerController.currentPreset.value}');
+
+      print(
+          'Applying equalizer settings: ${equalizerController.currentPreset.value}');
       print('Gains: $gains');
-      
+
       // Placeholder: Apply a simple volume adjustment based on overall gain
       final overallGain = gains.reduce((a, b) => a + b) / gains.length;
       final volumeMultiplier = (overallGain + 12) / 24; // Normalize to 0-1
-      
+
       if (isBinauralPlaying.value) {
         binauralPlayer.setVolume(binauralVolume.value * volumeMultiplier);
       }
       if (isMusicPlaying.value) {
         musicPlayer.setVolume(musicVolume.value * volumeMultiplier);
       }
-      
     } catch (e) {
       print('Error applying equalizer settings: $e');
     }
@@ -763,4 +776,3 @@ class BottomBarController extends GetxController {
     }
   }
 }
-

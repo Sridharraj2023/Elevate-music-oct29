@@ -14,7 +14,8 @@ class SubscriptionTiersScreen extends StatefulWidget {
   const SubscriptionTiersScreen({super.key});
 
   @override
-  State<SubscriptionTiersScreen> createState() => _SubscriptionTiersScreenState();
+  State<SubscriptionTiersScreen> createState() =>
+      _SubscriptionTiersScreenState();
 }
 
 class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
@@ -37,9 +38,9 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
         isLoading = true;
         errorMessage = null;
       });
-      
+
       final loadedTiers = await _subscriptionController.loadSubscriptionTiers();
-      
+
       setState(() {
         tiers = loadedTiers;
         isLoading = false;
@@ -100,16 +101,16 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
           ),
         ),
       );
-  }
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: GradientContainer(
         child: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
                 children: [
                   const SizedBox(height: 20),
                   Column(
@@ -182,7 +183,8 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
                                   });
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
                                   decoration: BoxDecoration(
                                     color: selectedBillingPeriod == 'monthly'
                                         ? Colors.white
@@ -204,13 +206,16 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
                                             selectedBillingPeriod = value!;
                                           });
                                         },
-                                        activeColor: selectedBillingPeriod == 'monthly'
-                                            ? const Color(0xFF6F41F3)
-                                            : Colors.white,
-                                        fillColor: MaterialStateProperty.resolveWith(
-                                          (states) => selectedBillingPeriod == 'monthly'
-                                              ? const Color(0xFF6F41F3)
-                                              : Colors.white,
+                                        activeColor:
+                                            selectedBillingPeriod == 'monthly'
+                                                ? const Color(0xFF6F41F3)
+                                                : Colors.white,
+                                        fillColor:
+                                            MaterialStateProperty.resolveWith(
+                                          (states) =>
+                                              selectedBillingPeriod == 'monthly'
+                                                  ? const Color(0xFF6F41F3)
+                                                  : Colors.white,
                                         ),
                                       ),
                                       Text(
@@ -218,9 +223,10 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
-                                          color: selectedBillingPeriod == 'monthly'
-                                              ? const Color(0xFF6F41F3)
-                                              : Colors.white,
+                                          color:
+                                              selectedBillingPeriod == 'monthly'
+                                                  ? const Color(0xFF6F41F3)
+                                                  : Colors.white,
                                         ),
                                       ),
                                     ],
@@ -237,7 +243,8 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
                                   });
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
                                   decoration: BoxDecoration(
                                     color: selectedBillingPeriod == 'yearly'
                                         ? Colors.white
@@ -259,24 +266,29 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
                                             selectedBillingPeriod = value!;
                                           });
                                         },
-                                        activeColor: selectedBillingPeriod == 'yearly'
-                                            ? const Color(0xFF6F41F3)
-                                            : Colors.white,
-                                        fillColor: MaterialStateProperty.resolveWith(
-                                          (states) => selectedBillingPeriod == 'yearly'
-                                              ? const Color(0xFF6F41F3)
-                                              : Colors.white,
+                                        activeColor:
+                                            selectedBillingPeriod == 'yearly'
+                                                ? const Color(0xFF6F41F3)
+                                                : Colors.white,
+                                        fillColor:
+                                            MaterialStateProperty.resolveWith(
+                                          (states) =>
+                                              selectedBillingPeriod == 'yearly'
+                                                  ? const Color(0xFF6F41F3)
+                                                  : Colors.white,
                                         ),
                                       ),
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'Yearly',
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
-                                              color: selectedBillingPeriod == 'yearly'
+                                              color: selectedBillingPeriod ==
+                                                      'yearly'
                                                   ? const Color(0xFF6F41F3)
                                                   : Colors.white,
                                             ),
@@ -286,7 +298,8 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
                                             style: TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500,
-                                              color: selectedBillingPeriod == 'yearly'
+                                              color: selectedBillingPeriod ==
+                                                      'yearly'
                                                   ? const Color(0xFF6F41F3)
                                                   : Colors.white70,
                                             ),
@@ -319,19 +332,24 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
                             String priceId = selectedBillingPeriod == 'yearly'
                                 ? tiers[0].yearlyPriceId
                                 : tiers[0].monthlyPriceId;
-                            
+
                             // Debug logging
-                            print("Selected billing period: $selectedBillingPeriod");
-                            print("Monthly Price ID: ${tiers[0].monthlyPriceId}");
+                            print(
+                                "Selected billing period: $selectedBillingPeriod");
+                            print(
+                                "Monthly Price ID: ${tiers[0].monthlyPriceId}");
                             print("Yearly Price ID: ${tiers[0].yearlyPriceId}");
                             print("Using Price ID: $priceId");
-                            
-                            await _subscriptionController.createSubscription(context, priceId);
+
+                            await _subscriptionController.createSubscription(
+                                context, priceId);
                           } catch (e) {
                             print("Subscribe Now error: $e");
                             if (e.toString().contains('Session expired')) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Session expired. Redirecting to login...')),
+                                const SnackBar(
+                                    content: Text(
+                                        'Session expired. Redirecting to login...')),
                               );
                               Get.offAll(() => LoginScreen());
                             } else {
@@ -372,9 +390,9 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
                   // Add safe area padding for system navigation bar
                   SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
                 ],
+              ),
             ),
           ),
-        ),
         ),
       ),
     );
@@ -437,7 +455,8 @@ class _SubscriptionTiersScreenState extends State<SubscriptionTiersScreen> {
         print("Tier tap error: $e");
         if (e.toString().contains('Session expired')) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Session expired. Redirecting to login...')),
+            const SnackBar(
+                content: Text('Session expired. Redirecting to login...')),
           );
           Get.offAll(() => LoginScreen());
         } else {

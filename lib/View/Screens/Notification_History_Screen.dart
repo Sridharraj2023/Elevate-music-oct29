@@ -5,12 +5,13 @@ class NotificationHistoryScreen extends StatefulWidget {
   const NotificationHistoryScreen({super.key});
 
   @override
-  State<NotificationHistoryScreen> createState() => _NotificationHistoryScreenState();
+  State<NotificationHistoryScreen> createState() =>
+      _NotificationHistoryScreenState();
 }
 
 class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
   final NotificationService _notificationService = NotificationService();
-  
+
   List<Map<String, dynamic>> _notifications = [];
   bool _isLoading = false;
   int _currentPage = 1;
@@ -280,7 +281,6 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
               ),
             ],
           ),
-          
           if (sentAt.isNotEmpty) ...[
             const SizedBox(height: 12),
             Row(
@@ -301,7 +301,6 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
               ],
             ),
           ],
-          
           if (metadata['errorMessage'] != null) ...[
             const SizedBox(height: 12),
             Container(
@@ -332,7 +331,6 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
               ),
             ),
           ],
-          
           if (metadata['deliveryId'] != null) ...[
             const SizedBox(height: 8),
             Text(

@@ -32,17 +32,23 @@ class FullAudioPlayerScreen extends StatelessWidget {
         }
         // Local hosts → swap to production and https
         final uri = Uri.parse(url);
-        if (uri.host.startsWith('192.168.') || uri.host == 'localhost' || uri.host == '127.0.0.1' || uri.host.contains('local')) {
+        if (uri.host.startsWith('192.168.') ||
+            uri.host == 'localhost' ||
+            uri.host == '127.0.0.1' ||
+            uri.host.contains('local')) {
           final prod = ApiConstants.resolvedApiUrl.replaceAll('/api', '');
-          final replaced = url.replaceAll(uri.host, Uri.parse(prod).host).replaceAll('http://', 'https://');
+          final replaced = url
+              .replaceAll(uri.host, Uri.parse(prod).host)
+              .replaceAll('http://', 'https://');
           return replaced.replaceAll(':${uri.port}', '');
         }
       } catch (_) {}
       return url;
     }
+
     final AudioPlayer player =
         isBinaural ? controller.binauralPlayer : controller.musicPlayer;
-    
+
     // Do not (re)load media here; controller manages the current source
 
     // MediaQuery for screen dimensions
@@ -87,21 +93,31 @@ class FullAudioPlayerScreen extends StatelessWidget {
         child: Obx(() {
           // Get current track info
           final currentTrack = isBinaural
-              ? controller.binauralPlaylists[controller.currentBinauralIndex.value]
+              ? controller
+                  .binauralPlaylists[controller.currentBinauralIndex.value]
               : controller.musicPlaylists[controller.currentMusicIndex.value];
-          
+
           // Get observable values
-          final position = isBinaural ? controller.binauralPosition : controller.musicPosition;
-          final duration = isBinaural ? controller.binauralDuration : controller.musicDuration;
-          final isPlaying = isBinaural ? controller.isBinauralPlaying : controller.isMusicPlaying;
-          final volume = isBinaural ? controller.binauralVolume : controller.musicVolume;
+          final position = isBinaural
+              ? controller.binauralPosition
+              : controller.musicPosition;
+          final duration = isBinaural
+              ? controller.binauralDuration
+              : controller.musicDuration;
+          final isPlaying = isBinaural
+              ? controller.isBinauralPlaying
+              : controller.isMusicPlaying;
+          final volume =
+              isBinaural ? controller.binauralVolume : controller.musicVolume;
 
           return SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: screenHeight - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom,
+                  minHeight: screenHeight -
+                      MediaQuery.of(context).padding.top -
+                      MediaQuery.of(context).padding.bottom,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,10 +126,11 @@ class FullAudioPlayerScreen extends StatelessWidget {
                     Column(
                       children: [
                         SizedBox(height: screenHeight * 0.02),
-                        
+
                         // Header with Back Button
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.05),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -123,7 +140,8 @@ class FullAudioPlayerScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(25),
                                 ),
                                 child: IconButton(
-                                  icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 24),
+                                  icon: const Icon(Icons.arrow_back_ios_new,
+                                      color: Colors.white, size: 24),
                                   onPressed: () => Get.back(),
                                 ),
                               ),
@@ -187,7 +205,8 @@ class FullAudioPlayerScreen extends StatelessWidget {
                             child: Image.network(
                               _resolveImageUrl(currentTrack.imageUrl),
                               fit: BoxFit.cover,
-                              loadingBuilder: (context, child, loadingProgress) {
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
                                 if (loadingProgress == null) return child;
                                 return Container(
                                   decoration: BoxDecoration(
@@ -203,17 +222,21 @@ class FullAudioPlayerScreen extends StatelessWidget {
                                   ),
                                   child: Center(
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withOpacity(0.7)),
+                                          valueColor: AlwaysStoppedAnimation<
+                                                  Color>(
+                                              Colors.white.withOpacity(0.7)),
                                           strokeWidth: 3,
                                         ),
                                         const SizedBox(height: 16),
                                         Text(
                                           "Loading...",
                                           style: TextStyle(
-                                            color: Colors.white.withOpacity(0.7),
+                                            color:
+                                                Colors.white.withOpacity(0.7),
                                             fontSize: 14,
                                           ),
                                         ),
@@ -264,7 +287,8 @@ class FullAudioPlayerScreen extends StatelessWidget {
 
                         // Track Information with Better Typography
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.08),
                           child: Column(
                             children: [
                               Text(
@@ -281,7 +305,8 @@ class FullAudioPlayerScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 6),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(20),
@@ -308,31 +333,37 @@ class FullAudioPlayerScreen extends StatelessWidget {
 
                         // Enhanced Progress Bar
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.08),
                           child: Column(
                             children: [
                               SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
                                   activeTrackColor: Colors.white,
-                                  inactiveTrackColor: Colors.white.withOpacity(0.2),
+                                  inactiveTrackColor:
+                                      Colors.white.withOpacity(0.2),
                                   thumbColor: Colors.white,
-                                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+                                  thumbShape: const RoundSliderThumbShape(
+                                      enabledThumbRadius: 8),
                                   trackHeight: 4,
-                                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+                                  overlayShape: const RoundSliderOverlayShape(
+                                      overlayRadius: 16),
                                 ),
                                 child: Slider(
                                   value: position.value.inSeconds.toDouble(),
-                                  max: duration.value.inSeconds > 0 
-                                      ? duration.value.inSeconds.toDouble() 
+                                  max: duration.value.inSeconds > 0
+                                      ? duration.value.inSeconds.toDouble()
                                       : 1,
                                   onChanged: (value) {
-                                    player.seek(Duration(seconds: value.toInt()));
+                                    player
+                                        .seek(Duration(seconds: value.toInt()));
                                   },
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     _formatDuration(position.value),
@@ -360,7 +391,8 @@ class FullAudioPlayerScreen extends StatelessWidget {
 
                         // Enhanced Volume Control
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.12),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.12),
                           child: Row(
                             children: [
                               Container(
@@ -370,10 +402,10 @@ class FullAudioPlayerScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
-                                  volume.value == 0 
-                                      ? Icons.volume_off 
-                                      : volume.value < 0.5 
-                                          ? Icons.volume_down 
+                                  volume.value == 0
+                                      ? Icons.volume_off
+                                      : volume.value < 0.5
+                                          ? Icons.volume_down
                                           : Icons.volume_up,
                                   color: Colors.white.withOpacity(0.8),
                                   size: 20,
@@ -384,11 +416,14 @@ class FullAudioPlayerScreen extends StatelessWidget {
                                 child: SliderTheme(
                                   data: SliderTheme.of(context).copyWith(
                                     activeTrackColor: Colors.white,
-                                    inactiveTrackColor: Colors.white.withOpacity(0.2),
+                                    inactiveTrackColor:
+                                        Colors.white.withOpacity(0.2),
                                     thumbColor: Colors.white,
-                                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                                    thumbShape: const RoundSliderThumbShape(
+                                        enabledThumbRadius: 6),
                                     trackHeight: 3,
-                                    overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+                                    overlayShape: const RoundSliderOverlayShape(
+                                        overlayRadius: 12),
                                   ),
                                   child: Slider(
                                     value: volume.value,
@@ -404,7 +439,8 @@ class FullAudioPlayerScreen extends StatelessWidget {
 
                         // Enhanced Control Buttons
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.06),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -418,7 +454,9 @@ class FullAudioPlayerScreen extends StatelessWidget {
                                 onPressed: () async {
                                   await player.seek(Duration.zero);
                                   // If not currently playing, start playback after refresh
-                                  if (!(isBinaural ? controller.isBinauralPlaying.value : controller.isMusicPlaying.value)) {
+                                  if (!(isBinaural
+                                      ? controller.isBinauralPlaying.value
+                                      : controller.isMusicPlaying.value)) {
                                     await player.play();
                                   }
                                 },
@@ -448,7 +486,8 @@ class FullAudioPlayerScreen extends StatelessWidget {
                         // Simple Equalizer Button - Navigate to Standalone Screen
                         Container(
                           width: double.infinity,
-                          margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
+                          margin: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.06),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(15),
@@ -461,9 +500,11 @@ class FullAudioPlayerScreen extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(15),
-                              onTap: () => Get.to(() => const StandaloneEqualizerScreen()),
+                              onTap: () => Get.to(
+                                  () => const StandaloneEqualizerScreen()),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 16, horizontal: 20),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [

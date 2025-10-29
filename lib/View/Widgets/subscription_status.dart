@@ -39,7 +39,8 @@ class _SubscriptionStatusState extends State<SubscriptionStatus> {
         final isSessionExpired = message.contains('Session expired');
         if (isSessionExpired) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Session expired. Redirecting to login...')),
+            const SnackBar(
+                content: Text('Session expired. Redirecting to login...')),
           );
           Get.offAll(() => LoginScreen());
           return;
@@ -59,17 +60,20 @@ class _SubscriptionStatusState extends State<SubscriptionStatus> {
 
     final raw = subscriptionStatus?['subscription'] ?? {};
     final String status = (raw['status'] ?? 'inactive') as String;
-    final bool isActive = (raw['isActive'] ?? (status == 'active' || status == 'trialing')) as bool;
+    final bool isActive = (raw['isActive'] ??
+        (status == 'active' || status == 'trialing')) as bool;
     final currentPeriodEnd = raw['currentPeriodEnd'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Subscription Status: ${(isActive ? 'ACTIVE' : status.toUpperCase())}'),
+        Text(
+            'Subscription Status: ${(isActive ? 'ACTIVE' : status.toUpperCase())}'),
         const SizedBox(height: 8),
         if (isActive) ...[
           if (currentPeriodEnd != null)
-            Text('Next Billing: ${DateTime.fromMillisecondsSinceEpoch((currentPeriodEnd as int) * 1000)}'),
+            Text(
+                'Next Billing: ${DateTime.fromMillisecondsSinceEpoch((currentPeriodEnd as int) * 1000)}'),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -195,7 +199,8 @@ class _SubscriptionStatusState extends State<SubscriptionStatus> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cancel Subscription'),
-        content: const Text('Are you sure you want to cancel your subscription?'),
+        content:
+            const Text('Are you sure you want to cancel your subscription?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -210,7 +215,9 @@ class _SubscriptionStatusState extends State<SubscriptionStatus> {
               } catch (e) {
                 if (e.toString().contains('Session expired')) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Session expired. Redirecting to login...')),
+                    const SnackBar(
+                        content:
+                            Text('Session expired. Redirecting to login...')),
                   );
                   Future.delayed(const Duration(seconds: 1), () {
                     Get.offAll(() => LoginScreen());
@@ -232,12 +239,14 @@ class _SubscriptionStatusState extends State<SubscriptionStatus> {
   Future<void> _startSubscription(BuildContext context) async {
     try {
       // Delegate to existing createSubscription flow using predefined priceId
-      await _controller.createSubscription(context, _controller.getSubscriptionTiers().first.priceId);
+      await _controller.createSubscription(
+          context, _controller.getSubscriptionTiers().first.priceId);
       await _loadSubscriptionStatus();
     } catch (e) {
       if (e.toString().contains('Session expired')) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Session expired. Redirecting to login...')),
+          const SnackBar(
+              content: Text('Session expired. Redirecting to login...')),
         );
         Future.delayed(const Duration(seconds: 1), () {
           Get.offAll(() => LoginScreen());
@@ -250,5 +259,3 @@ class _SubscriptionStatusState extends State<SubscriptionStatus> {
     }
   }
 }
-
-

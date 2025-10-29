@@ -8,7 +8,8 @@ class AuthHelper {
   static void handleSessionExpired(BuildContext context, String error) {
     if (error.contains('Session expired')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Session expired. Redirecting to login...')),
+        const SnackBar(
+            content: Text('Session expired. Redirecting to login...')),
       );
       // Redirect to login after a short delay
       Future.delayed(const Duration(seconds: 1), () {

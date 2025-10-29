@@ -37,5 +37,3 @@ class SubscriptionErrorHandler {
     debugPrint('Subscription Error: $error');
   }
 }
-
-

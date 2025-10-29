@@ -34,15 +34,17 @@ class _SubscriptionGuardState extends State<SubscriptionGuard> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userEmail = prefs.getString('email');
-      
+
       if (userEmail != null) {
-        final SubscriptionController _subscriptionController = SubscriptionController();
-        final status = await _subscriptionController.checkSubscriptionStatus(userEmail);
-        
+        final SubscriptionController _subscriptionController =
+            SubscriptionController();
+        final status =
+            await _subscriptionController.checkSubscriptionStatus(userEmail);
+
         // Check if user has made a recent payment as a fallback
         String? paymentDateStr = prefs.getString('payment_date');
         bool hasRecentPayment = false;
-        
+
         if (paymentDateStr != null) {
           try {
             DateTime paymentDate = DateTime.parse(paymentDateStr);
@@ -52,27 +54,30 @@ class _SubscriptionGuardState extends State<SubscriptionGuard> {
             print("Error parsing payment date during guard check: $e");
           }
         }
-        
-        bool hasValidSubscription = (status != null && status['isActive'] == true) || hasRecentPayment;
-        
+
+        bool hasValidSubscription =
+            (status != null && status['isActive'] == true) || hasRecentPayment;
+
         setState(() {
           _hasAccess = hasValidSubscription;
           _isChecking = false;
         });
-        
+
         if (!hasValidSubscription) {
-          print("SubscriptionGuard: User does not have valid subscription - redirecting");
-          
+          print(
+              "SubscriptionGuard: User does not have valid subscription - redirecting");
+
           // Show a message and redirect to subscription page
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(widget.customMessage ?? 'Please subscribe to access this content'),
+                content: Text(widget.customMessage ??
+                    'Please subscribe to access this content'),
                 backgroundColor: Colors.orange,
                 duration: const Duration(seconds: 3),
               ),
             );
-            
+
             // Redirect to subscription page after a short delay
             Future.delayed(const Duration(seconds: 2), () {
               if (mounted) {
@@ -87,7 +92,7 @@ class _SubscriptionGuardState extends State<SubscriptionGuard> {
           _hasAccess = false;
           _isChecking = false;
         });
-        
+
         if (mounted) {
           Get.off(() => SubscriptionTiersScreen());
         }
@@ -99,7 +104,7 @@ class _SubscriptionGuardState extends State<SubscriptionGuard> {
         _hasAccess = false;
         _isChecking = false;
       });
-      
+
       if (mounted) {
         Get.off(() => SubscriptionTiersScreen());
       }
@@ -115,7 +120,7 @@ class _SubscriptionGuardState extends State<SubscriptionGuard> {
         ),
       );
     }
-    
+
     if (!_hasAccess) {
       return const Scaffold(
         body: Center(
@@ -126,7 +131,7 @@ class _SubscriptionGuardState extends State<SubscriptionGuard> {
         ),
       );
     }
-    
+
     return widget.child;
   }
 }

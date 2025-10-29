@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../Model/Song.dart';
 
-
 class RecentlyPlayedItem extends StatelessWidget {
   final Song song;
 
@@ -29,7 +28,8 @@ class RecentlyPlayedItem extends StatelessWidget {
           const SizedBox(height: 5),
           Text(
             song.title,
-            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
             overflow: TextOverflow.ellipsis,
           ),
           Text(

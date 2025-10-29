@@ -4,24 +4,25 @@ import 'BottomBar_Controller.dart';
 class EqualizerController extends GetxController {
   // Frequency bands (Hz)
   static const List<double> frequencyBands = [
-    60,    // Sub-bass
-    170,   // Bass
-    310,   // Low-mid
-    600,   // Mid
-    1000,  // High-mid
-    3000,  // Presence
-    6000,  // Brilliance
+    60, // Sub-bass
+    170, // Bass
+    310, // Low-mid
+    600, // Mid
+    1000, // High-mid
+    3000, // Presence
+    6000, // Brilliance
     12000, // Air
     14000, // Ultra-high
-    16000  // Super-high
+    16000 // Super-high
   ];
 
   // Current equalizer settings (gain values from -12 to +12 dB)
-  var equalizerGains = <double>[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0].obs;
-  
+  var equalizerGains =
+      <double>[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0].obs;
+
   // Current preset
   var currentPreset = 'Custom'.obs;
-  
+
   // Equalizer enabled/disabled
   var isEqualizerEnabled = false.obs;
 

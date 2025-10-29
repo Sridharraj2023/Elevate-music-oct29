@@ -6,12 +6,14 @@ class NotificationPreferencesScreen extends StatefulWidget {
   const NotificationPreferencesScreen({super.key});
 
   @override
-  State<NotificationPreferencesScreen> createState() => _NotificationPreferencesScreenState();
+  State<NotificationPreferencesScreen> createState() =>
+      _NotificationPreferencesScreenState();
 }
 
-class _NotificationPreferencesScreenState extends State<NotificationPreferencesScreen> {
+class _NotificationPreferencesScreenState
+    extends State<NotificationPreferencesScreen> {
   final NotificationService _notificationService = NotificationService();
-  
+
   bool _emailReminders = true;
   bool _pushNotifications = true;
   List<String> _reminderFrequency = ['7days', '3days', '1day'];
@@ -19,11 +21,30 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
   String _timezone = 'UTC';
   bool _isLoading = false;
 
-  final List<String> _availableFrequencies = ['7days', '3days', '1day', 'expired'];
+  final List<String> _availableFrequencies = [
+    '7days',
+    '3days',
+    '1day',
+    'expired'
+  ];
   final List<String> _timeOptions = [
-    '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
-    '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
-    '18:00', '19:00', '20:00', '21:00', '22:00'
+    '06:00',
+    '07:00',
+    '08:00',
+    '09:00',
+    '10:00',
+    '11:00',
+    '12:00',
+    '13:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+    '19:00',
+    '20:00',
+    '21:00',
+    '22:00'
   ];
 
   @override
@@ -34,14 +55,16 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
 
   Future<void> _loadPreferences() async {
     setState(() => _isLoading = true);
-    
+
     try {
-      final preferences = await _notificationService.getNotificationPreferences();
+      final preferences =
+          await _notificationService.getNotificationPreferences();
       if (preferences != null) {
         setState(() {
           _emailReminders = preferences['emailReminders'] ?? true;
           _pushNotifications = preferences['pushNotifications'] ?? true;
-          _reminderFrequency = List<String>.from(preferences['reminderFrequency'] ?? ['7days', '3days', '1day']);
+          _reminderFrequency = List<String>.from(
+              preferences['reminderFrequency'] ?? ['7days', '3days', '1day']);
           _preferredTime = preferences['preferredTime'] ?? '09:00';
           _timezone = preferences['timezone'] ?? 'UTC';
         });
@@ -55,7 +78,7 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
 
   Future<void> _savePreferences() async {
     setState(() => _isLoading = true);
-    
+
     try {
       await _notificationService.updateNotificationPreferences(
         emailReminders: _emailReminders,
@@ -64,7 +87,7 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
         preferredTime: _preferredTime,
         timezone: _timezone,
       );
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -122,7 +145,8 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                         icon: Icons.email,
                         child: SwitchListTile(
                           title: const Text('Receive email reminders'),
-                          subtitle: const Text('Get notified via email when your subscription is about to expire'),
+                          subtitle: const Text(
+                              'Get notified via email when your subscription is about to expire'),
                           value: _emailReminders,
                           onChanged: (value) {
                             setState(() => _emailReminders = value);
@@ -130,16 +154,17 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                           activeColor: const Color(0xFF6F41F3),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Push Notifications Section
                       _buildSectionCard(
                         title: 'Push Notifications',
                         icon: Icons.notifications,
                         child: SwitchListTile(
                           title: const Text('Receive push notifications'),
-                          subtitle: const Text('Get notified on your device when your subscription is about to expire'),
+                          subtitle: const Text(
+                              'Get notified on your device when your subscription is about to expire'),
                           value: _pushNotifications,
                           onChanged: (value) {
                             setState(() => _pushNotifications = value);
@@ -147,19 +172,20 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                           activeColor: const Color(0xFF6F41F3),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Reminder Frequency Section
                       _buildSectionCard(
                         title: 'Reminder Frequency',
                         icon: Icons.schedule,
                         child: Column(
                           children: _availableFrequencies.map((frequency) {
-                            final isSelected = _reminderFrequency.contains(frequency);
+                            final isSelected =
+                                _reminderFrequency.contains(frequency);
                             final title = _getFrequencyTitle(frequency);
                             final subtitle = _getFrequencySubtitle(frequency);
-                            
+
                             return CheckboxListTile(
                               title: Text(title),
                               subtitle: Text(subtitle),
@@ -178,23 +204,24 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                           }).toList(),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Preferred Time Section
                       _buildSectionCard(
                         title: 'Preferred Time',
                         icon: Icons.access_time,
                         child: ListTile(
                           title: const Text('Notification Time'),
-                          subtitle: Text('Receive notifications at $_preferredTime'),
+                          subtitle:
+                              Text('Receive notifications at $_preferredTime'),
                           trailing: const Icon(Icons.arrow_forward_ios),
                           onTap: () => _showTimePicker(),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Timezone Section
                       _buildSectionCard(
                         title: 'Timezone',
@@ -206,9 +233,9 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                           onTap: () => _showTimezonePicker(),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 30),
-                      
+
                       // Save Button
                       SizedBox(
                         width: double.infinity,
@@ -228,7 +255,8 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
                                   ),
                                 )
                               : const Text('Save Preferences'),
@@ -339,7 +367,8 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
     ).then((selectedTime) {
       if (selectedTime != null) {
         setState(() {
-          _preferredTime = '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
+          _preferredTime =
+              '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
         });
       }
     });
@@ -347,7 +376,15 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
 
   void _showTimezonePicker() {
     final timezones = [
-      'UTC', 'EST', 'PST', 'CST', 'MST', 'GMT', 'CET', 'JST', 'AEST'
+      'UTC',
+      'EST',
+      'PST',
+      'CST',
+      'MST',
+      'GMT',
+      'CET',
+      'JST',
+      'AEST'
     ];
 
     showDialog(
@@ -356,14 +393,16 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
         title: const Text('Select Timezone'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: timezones.map((tz) => ListTile(
-            title: Text(tz),
-            selected: tz == _timezone,
-            onTap: () {
-              setState(() => _timezone = tz);
-              Navigator.pop(context);
-            },
-          )).toList(),
+          children: timezones
+              .map((tz) => ListTile(
+                    title: Text(tz),
+                    selected: tz == _timezone,
+                    onTap: () {
+                      setState(() => _timezone = tz);
+                      Navigator.pop(context);
+                    },
+                  ))
+              .toList(),
         ),
       ),
     );

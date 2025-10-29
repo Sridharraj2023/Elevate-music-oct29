@@ -38,20 +38,18 @@ class SubscriptionController {
     }
 
     _isLoadingTiers = true;
-    
+
     try {
       final response = await http.get(
         Uri.parse("${ApiConstants.resolvedApiUrl}/subscription-plans/current"),
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: {"Content-Type": "application/json"},
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true && data['data'] != null) {
           final planData = data['data'];
-          
+
           // Convert backend data to SubscriptionTier format
           final tier = SubscriptionTier(
             title: planData['title'] ?? 'Standard',
@@ -65,21 +63,26 @@ class SubscriptionController {
             dynamicAudioFeatures: planData['dynamicAudioFeatures'] ?? 'No',
             customTrackRequests: planData['customTrackRequests'] ?? 'No',
             priceId: planData['priceId'] ?? ApiConstants.priceId,
-            monthlyPriceId: planData['monthlyPriceId'] ?? planData['priceId'] ?? ApiConstants.priceId,
-            yearlyPriceId: planData['yearlyPriceId'] ?? planData['priceId'] ?? ApiConstants.priceId,
+            monthlyPriceId: planData['monthlyPriceId'] ??
+                planData['priceId'] ??
+                ApiConstants.priceId,
+            yearlyPriceId: planData['yearlyPriceId'] ??
+                planData['priceId'] ??
+                ApiConstants.priceId,
           );
-          
+
           _cachedTiers = [tier];
           return _cachedTiers;
         } else {
           throw Exception('Invalid response format from server');
         }
       } else {
-        throw Exception('Failed to load subscription plans: ${response.statusCode}');
+        throw Exception(
+            'Failed to load subscription plans: ${response.statusCode}');
       }
     } catch (e) {
       print("Error loading subscription tiers: $e");
-      
+
       // Fallback to hardcoded values if API fails
       final fallbackTier = SubscriptionTier(
         title: 'Premium Sep 25',
@@ -96,7 +99,7 @@ class SubscriptionController {
         monthlyPriceId: ApiConstants.priceId,
         yearlyPriceId: ApiConstants.priceId,
       );
-      
+
       _cachedTiers = [fallbackTier];
       return _cachedTiers;
     } finally {
@@ -139,10 +142,11 @@ class SubscriptionController {
       } else {
         final errorData = jsonDecode(response.body);
         print("Subscription creation error: ${errorData}");
-        
+
         // Handle specific error messages
-        String errorMessage = errorData['message'] ?? "Subscription creation failed";
-        if (errorMessage.contains('Payment method configuration error') || 
+        String errorMessage =
+            errorData['message'] ?? "Subscription creation failed";
+        if (errorMessage.contains('Payment method configuration error') ||
             errorMessage.contains('Payment setup error')) {
           errorMessage = "Payment setup error. Please try again.";
         } else if (errorMessage.contains('Invalid subscription plan')) {
@@ -154,57 +158,62 @@ class SubscriptionController {
         } else if (errorMessage.contains('Payment method attachment error')) {
           errorMessage = "Payment method attachment error. Please try again.";
         }
-        
+
         throw Exception(errorMessage);
       }
 
       final subscriptionData = jsonDecode(response.body);
-      
+
       // Debug: Print what backend returned
       print("Backend response: $subscriptionData");
-      
+
       // Check if subscription data exists
       if (subscriptionData["subscription"] == null) {
         throw Exception("No subscription data in response");
       }
-      
+
       // Check if clientSecret exists
       if (subscriptionData["subscription"]["clientSecret"] == null) {
-        print("Available keys in subscription: ${subscriptionData["subscription"].keys}");
+        print(
+            "Available keys in subscription: ${subscriptionData["subscription"].keys}");
         print("Full subscription data: ${subscriptionData["subscription"]}");
-        throw Exception("Subscription created but no payment intent was generated. Please try again.");
+        throw Exception(
+            "Subscription created but no payment intent was generated. Please try again.");
       }
-      
+
       // Extract payment intent ID from client secret
       String clientSecret = subscriptionData["subscription"]["clientSecret"];
       String paymentIntentId = clientSecret.split('_secret_')[0];
       print("Payment intent ID: $paymentIntentId");
-      
+
       // Handle mobile platforms with client secret from backend
-      print("Initializing payment sheet with client secret: ${subscriptionData["subscription"]["clientSecret"]}");
-      
+      print(
+          "Initializing payment sheet with client secret: ${subscriptionData["subscription"]["clientSecret"]}");
+
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: subscriptionData["subscription"]["clientSecret"],
+          paymentIntentClientSecret: subscriptionData["subscription"]
+              ["clientSecret"],
           merchantDisplayName: 'Elevate',
           style: ThemeMode.system,
           allowsDelayedPaymentMethods: true,
         ),
       );
-      
+
       print("Payment sheet initialized successfully");
 
       print("Payment sheet initialized, presenting...");
       await Stripe.instance.presentPaymentSheet();
       print("Payment sheet completed");
-      
+
       // Save payment date immediately after successful payment
       await prefs.setString('payment_date', DateTime.now().toIso8601String());
-      
+
       // After successful payment, update subscription with payment method
       print("Updating subscription with payment method...");
-      final paymentConfirmed = await updateSubscriptionPaymentMethod(paymentIntentId);
-      
+      final paymentConfirmed =
+          await updateSubscriptionPaymentMethod(paymentIntentId);
+
       if (paymentConfirmed) {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Subscription Successful!")));
@@ -214,14 +223,16 @@ class SubscriptionController {
         bool subscriptionActive = false;
         for (int i = 0; i < 5; i++) {
           await Future.delayed(Duration(seconds: 3));
-          final statusCheck = await checkSubscriptionStatus(prefs.getString('email') ?? '');
+          final statusCheck =
+              await checkSubscriptionStatus(prefs.getString('email') ?? '');
           if (statusCheck != null && statusCheck['isActive'] == true) {
             subscriptionActive = true;
             break;
           }
-          print("Retry ${i + 1}: Subscription not active yet, checking again...");
+          print(
+              "Retry ${i + 1}: Subscription not active yet, checking again...");
         }
-        
+
         if (subscriptionActive) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Subscription Successful!")));
@@ -243,58 +254,52 @@ class SubscriptionController {
                   const SnackBar(content: Text("Subscription Successful!")));
               Get.off(() => const HomePage());
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Payment completed but subscription activation is delayed. Please refresh the app or contact support.")));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text(
+                      "Payment completed but subscription activation is delayed. Please refresh the app or contact support.")));
             }
           }
         }
       }
     } catch (e) {
       print("Error: $e");
-      
+
       // Handle specific Stripe errors
       if (e.toString().contains('PaymentSheetError')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Payment was cancelled or failed. Please try again."))
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content:
+                Text("Payment was cancelled or failed. Please try again.")));
       } else if (e.toString().contains('PaymentIntent')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Payment processing error. Please try again."))
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Payment processing error. Please try again.")));
       } else if (e.toString().contains('Session expired')) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Session expired. Please login again."))
-        );
-        // Redirect to login screen if 
+            SnackBar(content: Text("Session expired. Please login again.")));
+        // Redirect to login screen if
         Get.offAll(() => LoginScreen());
       } else if (e.toString().contains('Payment setup error')) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Payment setup error. Please try again."))
-        );
+            SnackBar(content: Text("Payment setup error. Please try again.")));
       } else if (e.toString().contains('Subscription plan error')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Subscription plan error. Please contact support."))
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Subscription plan error. Please contact support.")));
       } else if (e.toString().contains('Account error')) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Account error. Please try again."))
-        );
+            SnackBar(content: Text("Account error. Please try again.")));
       } else if (e.toString().contains('Payment processing error')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Payment processing error. Please try again."))
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Payment processing error. Please try again.")));
       } else if (e.toString().contains('Payment method update failed')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Payment method update failed. Please try again."))
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Payment method update failed. Please try again.")));
       } else if (e.toString().contains('Payment method attachment error')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Payment method attachment error. Please try again."))
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content:
+                Text("Payment method attachment error. Please try again.")));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Payment Failed: ${e.toString().replaceAll('Exception: ', '')}"))
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                "Payment Failed: ${e.toString().replaceAll('Exception: ', '')}")));
       }
     }
   }
@@ -318,7 +323,8 @@ class SubscriptionController {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
-      hasDefaultPaymentMethod = (data['hasDefaultPaymentMethod'] ?? false) as bool;
+      hasDefaultPaymentMethod =
+          (data['hasDefaultPaymentMethod'] ?? false) as bool;
       autoDebitEnabled = (data['autoDebit'] ?? false) as bool;
       return data;
     } else if (response.statusCode == 401) {
@@ -342,7 +348,7 @@ class SubscriptionController {
       }
 
       print("Requesting SetupIntent from backend...");
-      
+
       // Request a SetupIntent client secret from backend
       final setupIntentResp = await http.post(
         Uri.parse("${ApiConstants.resolvedApiUrl}/payments/setup-intent"),
@@ -356,19 +362,22 @@ class SubscriptionController {
       print("SetupIntent response body: ${setupIntentResp.body}");
 
       if (setupIntentResp.statusCode != 200) {
-        print("SetupIntent request failed with status: ${setupIntentResp.statusCode}");
+        print(
+            "SetupIntent request failed with status: ${setupIntentResp.statusCode}");
         return false;
       }
-      
-      final setupData = jsonDecode(setupIntentResp.body) as Map<String, dynamic>;
+
+      final setupData =
+          jsonDecode(setupIntentResp.body) as Map<String, dynamic>;
       final clientSecret = setupData['clientSecret'] as String?;
-      
+
       if (clientSecret == null) {
         print("No clientSecret in SetupIntent response");
         return false;
       }
 
-      print("Initializing payment sheet with client secret: ${clientSecret.substring(0, 20)}...");
+      print(
+          "Initializing payment sheet with client secret: ${clientSecret.substring(0, 20)}...");
 
       // Present Stripe payment sheet to collect and attach a payment method (mandate)
       await Stripe.instance.initPaymentSheet(
@@ -391,7 +400,7 @@ class SubscriptionController {
       print("Checking billing status...");
       final status = await getBillingStatus();
       print("Billing status: $status");
-      
+
       return (status['hasDefaultPaymentMethod'] ?? false) as bool;
     } catch (e) {
       print("Error in ensureDefaultPaymentMethod: $e");
@@ -463,78 +472,86 @@ class SubscriptionController {
       }
 
       final subscriptionData = jsonDecode(response.body);
-      
+
       if (subscriptionData['subscription'] == null) {
         return null; // No subscription found
       }
 
       final subscription = subscriptionData['subscription'];
       final status = subscription['status'];
-      
+
       // Check if user has made a recent payment by looking at payment date
       String? paymentDateStr = prefs.getString('payment_date');
       bool hasRecentPayment = false;
-      
+
       if (paymentDateStr != null) {
         try {
           DateTime paymentDate = DateTime.parse(paymentDateStr);
           DateTime now = DateTime.now();
           // Consider payment valid if made within last 7 days
           hasRecentPayment = now.difference(paymentDate).inDays < 7;
-          print("Payment date: $paymentDateStr, Has recent payment: $hasRecentPayment");
+          print(
+              "Payment date: $paymentDateStr, Has recent payment: $hasRecentPayment");
         } catch (e) {
           print("Error parsing payment date: $e");
         }
       }
-      
+
       // Enhanced subscription status checking
       bool isActive = false;
-      
+
       if (status == 'active' || status == 'trialing') {
         // Definitely active
         isActive = true;
       } else if (hasRecentPayment) {
         // If user has made a recent payment, trust that over Stripe's potentially outdated status
-        print("Recent payment found - treating subscription as active regardless of Stripe status");
+        print(
+            "Recent payment found - treating subscription as active regardless of Stripe status");
         isActive = true;
-        
+
         // Still try to fix the status in the background for future consistency
         if (status == 'incomplete' || status == 'incomplete_expired') {
           print("Attempting to fix Stripe status in background...");
           try {
             final fixResponse = await http.post(
-              Uri.parse("${ApiConstants.resolvedApiUrl}/subscriptions/fix-status"),
+              Uri.parse(
+                  "${ApiConstants.resolvedApiUrl}/subscriptions/fix-status"),
               headers: {
                 "Authorization": "Bearer $token",
               },
             );
-            
+
             if (fixResponse.statusCode == 200) {
               final fixData = jsonDecode(fixResponse.body);
-              if (fixData['subscription'] != null && fixData['subscription']['isActive'] == true) {
+              if (fixData['subscription'] != null &&
+                  fixData['subscription']['isActive'] == true) {
                 print("Background fix successful - Stripe status updated");
                 // Update the subscription data with the fixed status
                 subscription['status'] = 'active';
               }
             }
           } catch (fixError) {
-            print("Background fix failed but subscription remains active: $fixError");
+            print(
+                "Background fix failed but subscription remains active: $fixError");
           }
         }
       } else if (status == 'incomplete' || status == 'incomplete_expired') {
         // No recent payment and incomplete status - try to fix
-        print("Subscription incomplete with no recent payment, attempting to fix status...");
+        print(
+            "Subscription incomplete with no recent payment, attempting to fix status...");
         try {
           final fixResponse = await http.post(
-            Uri.parse("${ApiConstants.resolvedApiUrl}/subscriptions/fix-status"),
+            Uri.parse(
+                "${ApiConstants.resolvedApiUrl}/subscriptions/fix-status"),
             headers: {
               "Authorization": "Bearer $token",
             },
           );
-          
+
           if (fixResponse.statusCode == 200) {
             final fixData = jsonDecode(fixResponse.body);
-            if (fixData['subscription'] != null && fixData['subscription']['isActive'] == true) {
+            if (fixData['subscription'] != null &&
+                fixData['subscription']['isActive'] == true) {
               print("Subscription status fixed successfully");
               isActive = true;
               // Update the subscription data with the fixed status
@@ -545,12 +562,12 @@ class SubscriptionController {
           print("Error fixing subscription status: $fixError");
         }
       }
-      
+
       // Debug: Log subscription status for troubleshooting
       print("Subscription status: $status");
       print("Is active: $isActive");
       print("Has recent payment: $hasRecentPayment");
-      
+
       // If subscription is incomplete, it means payment wasn't completed
       if (status == 'incomplete' && !hasRecentPayment) {
         print("Warning: Subscription is incomplete - payment not completed");
@@ -569,8 +586,10 @@ class SubscriptionController {
       return {
         "isActive": isActive,
         "expiryDate": expiryDate,
-        "interval": subscription['interval'] ?? 'month',  // Add interval to response
-        "currentPeriodEnd": subscription['currentPeriodEnd'],  // Add currentPeriodEnd to response
+        "interval":
+            subscription['interval'] ?? 'month', // Add interval to response
+        "currentPeriodEnd": subscription[
+            'currentPeriodEnd'], // Add currentPeriodEnd to response
       };
     } catch (e) {
       print("Error fetching subscription: $e");
@@ -628,22 +647,22 @@ class SubscriptionController {
       }
 
       final response = await http.post(
-        Uri.parse("${ApiConstants.resolvedApiUrl}/subscriptions/update-payment-method"),
+        Uri.parse(
+            "${ApiConstants.resolvedApiUrl}/subscriptions/update-payment-method"),
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json"
         },
-        body: jsonEncode({
-          "paymentIntentId": paymentIntentId
-        }),
+        body: jsonEncode({"paymentIntentId": paymentIntentId}),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         print("Subscription updated with payment method: ${data['message']}");
-        
+
         // Check if the subscription is actually active
-        if (data['subscription'] != null && data['subscription']['isActive'] == true) {
+        if (data['subscription'] != null &&
+            data['subscription']['isActive'] == true) {
           return true;
         } else {
           print("Payment method updated but subscription not active yet");
@@ -656,9 +675,10 @@ class SubscriptionController {
       } else {
         final errorData = jsonDecode(response.body);
         print("Payment method update failed: ${errorData['message']}");
-        
+
         // Handle specific error messages
-        String errorMessage = errorData['message'] ?? "Payment method update failed";
+        String errorMessage =
+            errorData['message'] ?? "Payment method update failed";
         if (errorMessage.contains('Payment method attachment error')) {
           print("Payment method attachment error - will retry");
         } else if (errorMessage.contains('Payment intent error')) {
@@ -666,7 +686,7 @@ class SubscriptionController {
         } else if (errorMessage.contains('Subscription update error')) {
           print("Subscription update error - will retry");
         }
-        
+
         return false;
       }
     } catch (e) {
@@ -698,9 +718,10 @@ class SubscriptionController {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         print("Subscription status fixed: ${data['message']}");
-        
+
         // Check if the subscription is actually active
-        if (data['subscription'] != null && data['subscription']['isActive'] == true) {
+        if (data['subscription'] != null &&
+            data['subscription']['isActive'] == true) {
           return true;
         } else {
           print("Subscription status fixed but not active yet");
@@ -744,9 +765,10 @@ class SubscriptionController {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         print("Payment confirmed: ${data['message']}");
-        
+
         // Check if the subscription is actually active
-        if (data['subscription'] != null && data['subscription']['isActive'] == true) {
+        if (data['subscription'] != null &&
+            data['subscription']['isActive'] == true) {
           return true;
         } else {
           print("Payment confirmed but subscription not active yet");

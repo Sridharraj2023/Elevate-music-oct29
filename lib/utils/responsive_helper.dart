@@ -5,34 +5,36 @@ import 'package:flutter/material.dart';
 class ResponsiveHelper {
   static const double mobileMaxWidth = 600;
   static const double tabletMaxWidth = 1024;
-  
+
   /// Check if the current device is mobile
   static bool isMobile(BuildContext context) {
     return MediaQuery.of(context).size.width < mobileMaxWidth;
   }
-  
+
   /// Check if the current device is tablet
   static bool isTablet(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return width >= mobileMaxWidth && width < tabletMaxWidth;
   }
-  
+
   /// Check if the current device is desktop
   static bool isDesktop(BuildContext context) {
     return MediaQuery.of(context).size.width >= tabletMaxWidth;
   }
-  
+
   /// Get responsive width - limits max width on tablets/desktop
-  static double getResponsiveWidth(BuildContext context, {double maxWidth = 500}) {
+  static double getResponsiveWidth(BuildContext context,
+      {double maxWidth = 500}) {
     final screenWidth = MediaQuery.of(context).size.width;
     if (isTablet(context) || isDesktop(context)) {
       return maxWidth.clamp(0, screenWidth * 0.8);
     }
     return screenWidth;
   }
-  
+
   /// Get responsive font size
-  static double getResponsiveFontSize(BuildContext context, double baseFontSize) {
+  static double getResponsiveFontSize(
+      BuildContext context, double baseFontSize) {
     if (isMobile(context)) {
       return baseFontSize;
     } else if (isTablet(context)) {
@@ -41,18 +43,21 @@ class ResponsiveHelper {
       return baseFontSize * 1.4; // 40% larger on desktop
     }
   }
-  
+
   /// Get responsive padding
   static EdgeInsets getResponsivePadding(BuildContext context) {
     if (isMobile(context)) {
-      return EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.07);
+      return EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.07);
     } else if (isTablet(context)) {
-      return EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.15);
+      return EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.15);
     } else {
-      return EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.25);
+      return EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.25);
     }
   }
-  
+
   /// Get constrained box for forms (useful for login/signup screens on tablets)
   static BoxConstraints getFormConstraints(BuildContext context) {
     if (isMobile(context)) {
@@ -63,7 +68,7 @@ class ResponsiveHelper {
       return BoxConstraints(maxWidth: 600);
     }
   }
-  
+
   /// Get logo size based on screen
   static double getLogoSize(BuildContext context, double mobileSize) {
     if (isMobile(context)) {
@@ -74,7 +79,7 @@ class ResponsiveHelper {
       return mobileSize * 2;
     }
   }
-  
+
   /// Get button constraints
   static BoxConstraints getButtonConstraints(BuildContext context) {
     if (isMobile(context)) {
@@ -89,7 +94,7 @@ class ResponsiveHelper {
       );
     }
   }
-  
+
   /// Value based on screen type
   static T valueByScreen<T>({
     required BuildContext context,
@@ -109,9 +114,12 @@ class ResponsiveHelper {
 
 /// Responsive widget builder
 class ResponsiveBuilder extends StatelessWidget {
-  final Widget Function(BuildContext context, BoxConstraints constraints) mobile;
-  final Widget Function(BuildContext context, BoxConstraints constraints)? tablet;
-  final Widget Function(BuildContext context, BoxConstraints constraints)? desktop;
+  final Widget Function(BuildContext context, BoxConstraints constraints)
+      mobile;
+  final Widget Function(BuildContext context, BoxConstraints constraints)?
+      tablet;
+  final Widget Function(BuildContext context, BoxConstraints constraints)?
+      desktop;
 
   const ResponsiveBuilder({
     Key? key,
@@ -154,9 +162,8 @@ class ResponsiveCenter extends StatelessWidget {
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: ResponsiveHelper.isMobile(context) 
-              ? double.infinity 
-              : maxWidth,
+          maxWidth:
+              ResponsiveHelper.isMobile(context) ? double.infinity : maxWidth,
         ),
         child: Padding(
           padding: padding ?? ResponsiveHelper.getResponsivePadding(context),
@@ -166,4 +173,3 @@ class ResponsiveCenter extends StatelessWidget {
     );
   }
 }
-

@@ -34,12 +34,13 @@ class AuthController {
     if (response.statusCode == 201) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Account created successfully! Please subscribe to continue."),
+          content: Text(
+              "Account created successfully! Please subscribe to continue."),
           backgroundColor: Colors.green,
         ),
       );
       print(await response.stream.bytesToString());
-      
+
       // Auto-login the user after successful signup
       try {
         await login(user.email, user.password, context);
@@ -93,33 +94,35 @@ class AuthController {
         await prefs.setString('name', name);
         await prefs.setString('email', email);
         await prefs.setString('id', id);
-        
+
         // Show login success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text("Login Successful"),
-              backgroundColor: Colors.green),
+              content: Text("Login Successful"), backgroundColor: Colors.green),
         );
-        
+
         // Now check subscription status to determine where to redirect
-        final SubscriptionController _subscriptionController = SubscriptionController();
-        final status = await _subscriptionController.checkSubscriptionStatus(email);
-        
+        final SubscriptionController _subscriptionController =
+            SubscriptionController();
+        final status =
+            await _subscriptionController.checkSubscriptionStatus(email);
+
         // Check if user has made a recent payment as a fallback
         String? paymentDateStr = prefs.getString('payment_date');
         bool hasRecentPayment = false;
-        
+
         if (paymentDateStr != null) {
           try {
             DateTime paymentDate = DateTime.parse(paymentDateStr);
             DateTime now = DateTime.now();
             hasRecentPayment = now.difference(paymentDate).inDays < 7;
-            print("Login check - Payment date: $paymentDateStr, Has recent payment: $hasRecentPayment");
+            print(
+                "Login check - Payment date: $paymentDateStr, Has recent payment: $hasRecentPayment");
           } catch (e) {
             print("Error parsing payment date during login: $e");
           }
         }
-        
+
         // Check subscription status from backend response first
         bool backendSubscriptionActive = false;
         if (responseData["subscription"] != null) {
@@ -127,27 +130,30 @@ class AuthController {
           backendSubscriptionActive = subscriptionData["isActive"] ?? false;
           log("Backend login response - subscription active: $backendSubscriptionActive");
         }
-        
+
         // Debug logging for new users
         print("=== LOGIN DEBUG INFO ===");
         print("Backend subscription active: $backendSubscriptionActive");
         print("Frontend subscription status: $status");
         print("Has recent payment: $hasRecentPayment");
-        
+
         // Determine if user should have access
         bool shouldAllowAccess = false;
-        
+
         // Only allow access if user has an ACTIVE subscription (not just recent payment)
-        if (backendSubscriptionActive || (status != null && status['isActive'] == true)) {
+        if (backendSubscriptionActive ||
+            (status != null && status['isActive'] == true)) {
           // User has active subscription from backend or frontend check
           shouldAllowAccess = true;
-          print("Login: User has active subscription - allowing access to homepage");
+          print(
+              "Login: User has active subscription - allowing access to homepage");
         } else {
           // No active subscription - MUST subscribe (including new users)
           shouldAllowAccess = false;
-          print("Login: No active subscription - redirecting to subscription page");
+          print(
+              "Login: No active subscription - redirecting to subscription page");
         }
-        
+
         // Redirect based on subscription status
         if (shouldAllowAccess) {
           Get.off(() => const HomePage());
@@ -187,13 +193,13 @@ class AuthController {
 
     try {
       log("Requesting password reset for email: $email");
-      
+
       var response = await http.post(
         Uri.parse(baseUrl),
         headers: headers,
         body: jsonEncode({"email": email}),
       );
-      
+
       log("Password reset request status: ${response.statusCode}");
 
       if (response.statusCode == 200) {
@@ -203,10 +209,8 @@ class AuthController {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              responseData["message"] ?? 
-              "If an account with that email exists, a password reset link has been sent."
-            ),
+            content: Text(responseData["message"] ??
+                "If an account with that email exists, a password reset link has been sent."),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 5),
           ),
@@ -221,7 +225,8 @@ class AuthController {
         var errorData = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errorData["message"] ?? "Failed to send reset email. Please try again."),
+            content: Text(errorData["message"] ??
+                "Failed to send reset email. Please try again."),
             backgroundColor: Colors.red,
           ),
         );
@@ -230,7 +235,8 @@ class AuthController {
       log("Password reset request error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Error: Unable to send reset email. Please check your connection."),
+          content: Text(
+              "Error: Unable to send reset email. Please check your connection."),
           backgroundColor: Colors.red,
         ),
       );
@@ -240,19 +246,21 @@ class AuthController {
   // @desc    Reset password with token
   // @route   POST /api/users/reset-password/:token
   // @access  Public
-  Future<void> resetPassword(String token, String newPassword, BuildContext context) async {
-    String baseUrl = "${ApiConstants.resolvedApiUrl}/users/reset-password/$token";
+  Future<void> resetPassword(
+      String token, String newPassword, BuildContext context) async {
+    String baseUrl =
+        "${ApiConstants.resolvedApiUrl}/users/reset-password/$token";
     var headers = {'Content-Type': 'application/json'};
 
     try {
       log("Resetting password with token");
-      
+
       var response = await http.post(
         Uri.parse(baseUrl),
         headers: headers,
         body: jsonEncode({"password": newPassword}),
       );
-      
+
       log("Password reset status: ${response.statusCode}");
 
       if (response.statusCode == 200) {
@@ -262,10 +270,8 @@ class AuthController {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              responseData["message"] ?? 
-              "Password reset successful. You can now log in with your new password."
-            ),
+            content: Text(responseData["message"] ??
+                "Password reset successful. You can now log in with your new password."),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 5),
           ),
@@ -281,7 +287,8 @@ class AuthController {
         var errorData = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errorData["message"] ?? "Failed to reset password. The link may have expired."),
+            content: Text(errorData["message"] ??
+                "Failed to reset password. The link may have expired."),
             backgroundColor: Colors.red,
           ),
         );

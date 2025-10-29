@@ -315,7 +315,8 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!hasSpecialChar) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Password must contain at least one special character (!@#\$%^&*)."),
+          content: Text(
+              "Password must contain at least one special character (!@#\$%^&*)."),
           backgroundColor: Colors.red,
         ),
       );
@@ -406,23 +407,27 @@ class _SignupScreenState extends State<SignupScreen> {
                       children: [
                         CheckboxListTile(
                           value: _acceptedTerms,
-                          onChanged: (v) => setState(() => _acceptedTerms = v ?? false),
+                          onChanged: (v) =>
+                              setState(() => _acceptedTerms = v ?? false),
                           controlAffinity: ListTileControlAffinity.leading,
                           dense: true,
-                          visualDensity: const VisualDensity(horizontal: -2, vertical: -2),
+                          visualDensity:
+                              const VisualDensity(horizontal: -2, vertical: -2),
                           activeColor: Colors.white,
                           checkColor: Colors.black,
                           title: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              const Text('I agree to the ', style: TextStyle(color: Colors.white)),
+                              const Text('I agree to the ',
+                                  style: TextStyle(color: Colors.white)),
                               GestureDetector(
                                 onTap: () async {
                                   // Navigate to TermsConditionsScreen to show terms from admin
                                   final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => const TermsConditionsScreen(),
+                                      builder: (_) =>
+                                          const TermsConditionsScreen(),
                                     ),
                                   );
                                   // If user clicked "I Agree", automatically check the checkbox
@@ -430,9 +435,13 @@ class _SignupScreenState extends State<SignupScreen> {
                                     setState(() => _acceptedTerms = true);
                                   }
                                 },
-                                child: const Text('Terms & Conditions', style: TextStyle(color: Colors.white, decoration: TextDecoration.underline)),
+                                child: const Text('Terms & Conditions',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        decoration: TextDecoration.underline)),
                               ),
-                              const Text(' and ', style: TextStyle(color: Colors.white)),
+                              const Text(' and ',
+                                  style: TextStyle(color: Colors.white)),
                               GestureDetector(
                                 onTap: () async {
                                   // Navigate to DisclaimerScreen to show disclaimer from admin
@@ -443,7 +452,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ),
                                   );
                                 },
-                                child: const Text('Disclaimer', style: TextStyle(color: Colors.white, decoration: TextDecoration.underline)),
+                                child: const Text('Disclaimer',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        decoration: TextDecoration.underline)),
                               ),
                             ],
                           ),
@@ -457,7 +469,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     _isLoading
                         ? CircularProgressIndicator(color: Colors.white)
                         : ElevatedButton(
-                            onPressed: _acceptedTerms ? () => _signUp(context) : null,
+                            onPressed:
+                                _acceptedTerms ? () => _signUp(context) : null,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               shape: RoundedRectangleBorder(

@@ -123,192 +123,190 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: [
-          // Vertical Label & Image
-          Expanded(
-            flex: 1,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RotatedBox(
-                  quarterTurns: -1,
-                  child: Text(
-                    label.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Image.asset(
-                    'assets/images/Elevate Logo White.png',
-                    height: 16,
-                    width: 16,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Song details & Slider
-          Expanded(
-            flex: 4,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: Obx(() {
-                    final currentTrack = label == 'binaural'
-                        ? controller.binauralPlaylists[
-                            controller.currentBinauralIndex.value]
-                        : controller
-                            .musicPlaylists[controller.currentMusicIndex.value];
-                    log("Current Track: ${currentTrack.title}");
-
-                    return Text(
-                      currentTrack.title,
+            // Vertical Label & Image
+            Expanded(
+              flex: 1,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RotatedBox(
+                    quarterTurns: -1,
+                    child: Text(
+                      label.toUpperCase(),
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
+                        fontSize: 8,
                         fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    );
-                  }),
-                ),
-                const Text(
-                  "Frequency Tuning",
-                  style: TextStyle(
-                    fontSize: 7,
-                    color: Colors.white70,
+                    ),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      positionText,
-                      style: const TextStyle(
-                        fontSize: 6,
-                        color: Colors.white70,
-                      ),
+                  const SizedBox(height: 2),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.asset(
+                      'assets/images/Elevate Logo White.png',
+                      height: 16,
+                      width: 16,
+                      fit: BoxFit.cover,
                     ),
-                    Expanded(
-                      child: Slider(
-                        value: position.inSeconds.toDouble(),
-                        min: 0,
-                        max: duration.inSeconds > 0
-                            ? duration.inSeconds.toDouble()
-                            : 1,
-                        onChanged: (value) {
-                          seek(Duration(seconds: value.toInt()));
-                        },
-                        activeColor: Colors.white,
-                        inactiveColor: Colors.white30,
-                      ),
-                    ),
-                    Text(
-                      durationText,
-                      style: const TextStyle(
-                        fontSize: 6,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          // Playback Controls & Close Button
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InkWell(
-                      onTap: () => previous(),
-                      child: const Icon(Icons.skip_previous,
-                          color: Colors.white, size: 18),
-                    ),
-                    const SizedBox(width: 1),
-                    InkWell(
-                      onTap: () => togglePlayPause(),
-                      child: Icon(
-                          isPlaying ? Icons.pause : Icons.play_arrow,
+            // Song details & Slider
+            Expanded(
+              flex: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: Obx(() {
+                      final currentTrack = label == 'binaural'
+                          ? controller.binauralPlaylists[
+                              controller.currentBinauralIndex.value]
+                          : controller.musicPlaylists[
+                              controller.currentMusicIndex.value];
+                      log("Current Track: ${currentTrack.title}");
+
+                      return Text(
+                        currentTrack.title,
+                        style: const TextStyle(
                           color: Colors.white,
-                          size: 16),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      );
+                    }),
+                  ),
+                  const Text(
+                    "Frequency Tuning",
+                    style: TextStyle(
+                      fontSize: 7,
+                      color: Colors.white70,
                     ),
-                    const SizedBox(width: 1),
-                    InkWell(
-                      onTap: () => next(),
-                      child: const Icon(Icons.skip_next,
-                          color: Colors.white, size: 18),
-                    ),
-                    const SizedBox(width: 1),
-                    InkWell(
-                      onTap: stop,
-                      child: const Icon(Icons.close,
-                          color: Colors.red, size: 18),
-                    ),
-                    const SizedBox(width: 1),
-                    InkWell(
-                      onTap: () {
-                        Get.to(() => FullAudioPlayerScreen(
-                              isBinaural: label == 'binaural',
-                              track: track,
-                            ));
-                      },
-                      child: const Icon(Icons.fullscreen,
-                          color: Colors.white, size: 18),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 16,
-                        child: Slider(
-                          value: volume.value,
-                          onChanged: setVolume,
-                          min: 0,
-                          max: 1,
-                          activeColor: Colors.white,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        positionText,
+                        style: const TextStyle(
+                          fontSize: 6,
+                          color: Colors.white70,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 2),
-                    InkWell(
-                      onTap: () {
-                        setVolume(volume.value > 0 ? 0 : 0.5);
-                      },
-                      child: Icon(
-                        volume.value == 0
-                            ? Icons.volume_off
-                            : Icons.volume_up,
-                        color: Colors.white,
-                        size: 14,
+                      Expanded(
+                        child: Slider(
+                          value: position.inSeconds.toDouble(),
+                          min: 0,
+                          max: duration.inSeconds > 0
+                              ? duration.inSeconds.toDouble()
+                              : 1,
+                          onChanged: (value) {
+                            seek(Duration(seconds: value.toInt()));
+                          },
+                          activeColor: Colors.white,
+                          inactiveColor: Colors.white30,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      Text(
+                        durationText,
+                        style: const TextStyle(
+                          fontSize: 6,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+
+            // Playback Controls & Close Button
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () => previous(),
+                        child: const Icon(Icons.skip_previous,
+                            color: Colors.white, size: 18),
+                      ),
+                      const SizedBox(width: 1),
+                      InkWell(
+                        onTap: () => togglePlayPause(),
+                        child: Icon(isPlaying ? Icons.pause : Icons.play_arrow,
+                            color: Colors.white, size: 16),
+                      ),
+                      const SizedBox(width: 1),
+                      InkWell(
+                        onTap: () => next(),
+                        child: const Icon(Icons.skip_next,
+                            color: Colors.white, size: 18),
+                      ),
+                      const SizedBox(width: 1),
+                      InkWell(
+                        onTap: stop,
+                        child: const Icon(Icons.close,
+                            color: Colors.red, size: 18),
+                      ),
+                      const SizedBox(width: 1),
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => FullAudioPlayerScreen(
+                                isBinaural: label == 'binaural',
+                                track: track,
+                              ));
+                        },
+                        child: const Icon(Icons.fullscreen,
+                            color: Colors.white, size: 18),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 16,
+                          child: Slider(
+                            value: volume.value,
+                            onChanged: setVolume,
+                            min: 0,
+                            max: 1,
+                            activeColor: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      InkWell(
+                        onTap: () {
+                          setVolume(volume.value > 0 ? 0 : 0.5);
+                        },
+                        child: Icon(
+                          volume.value == 0
+                              ? Icons.volume_off
+                              : Icons.volume_up,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

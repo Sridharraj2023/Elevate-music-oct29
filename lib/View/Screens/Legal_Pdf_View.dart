@@ -3,12 +3,13 @@ import '../widgets/gradient_container.dart';
 
 class LegalPdfView extends StatefulWidget {
   final String title;
-  final String assetPath; // e.g. assets/legal/terms.pdf (not used anymore but kept for compatibility)
+  final String
+      assetPath; // e.g. assets/legal/terms.pdf (not used anymore but kept for compatibility)
   final bool showAgreeButton; // Whether to show the agree button
 
   const LegalPdfView({
-    super.key, 
-    required this.title, 
+    super.key,
+    required this.title,
     required this.assetPath,
     this.showAgreeButton = true,
   });
@@ -295,11 +296,13 @@ By proceeding to use the Elevate App, you acknowledge that you have read, unders
             children: [
               // Header with back button
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                      icon: const Icon(Icons.arrow_back_ios_new,
+                          color: Colors.white),
                       onPressed: () => Navigator.pop(context, false),
                     ),
                     Expanded(
@@ -317,7 +320,7 @@ By proceeding to use the Elevate App, you acknowledge that you have read, unders
                   ],
                 ),
               ),
-              
+
               // Scrollable content
               Expanded(
                 child: Container(
@@ -348,7 +351,7 @@ By proceeding to use the Elevate App, you acknowledge that you have read, unders
                   ),
                 ),
               ),
-              
+
               // Agree button at the bottom
               if (widget.showAgreeButton)
                 Padding(

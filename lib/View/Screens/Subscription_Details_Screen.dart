@@ -11,7 +11,8 @@ class SubscriptionDetailsScreen extends StatefulWidget {
   const SubscriptionDetailsScreen({super.key});
 
   @override
-  State<SubscriptionDetailsScreen> createState() => _SubscriptionDetailsScreenState();
+  State<SubscriptionDetailsScreen> createState() =>
+      _SubscriptionDetailsScreenState();
 }
 
 class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
@@ -19,14 +20,15 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
   DateTime? expiryDate;
   int remainingDays = 0;
   Timer? _timer;
-  final SubscriptionController _subscriptionController = SubscriptionController();
+  final SubscriptionController _subscriptionController =
+      SubscriptionController();
   bool isLoading = false;
   bool _autoDebit = false;
   bool _hasDefaultPaymentMethod = false;
   Map<String, dynamic>? _subscriptionStatus;
   bool _isSubscriptionActive = false;
   String _subscriptionInterval = 'month'; // 'month' or 'year'
-  
+
   DateTime? _coerceToDateTime(dynamic value) {
     try {
       if (value == null) return null;
@@ -68,11 +70,11 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     super.initState();
     _initializeData();
   }
-  
+
   Future<void> _initializeData() async {
     // Clear any false payment data first
     await ClearFalsePaymentData.clearFalsePaymentData();
-    
+
     // Then load the actual data
     _loadPaymentDate();
     _startCountdown();
@@ -85,7 +87,6 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     _timer?.cancel();
     super.dispose();
   }
-
 
   Future<void> _loadBillingStatus() async {
     try {
@@ -103,26 +104,27 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userEmail = prefs.getString('email');
-      
+
       print('Loading subscription status for email: $userEmail');
-      
+
       if (userEmail != null) {
         // First try the enhanced checkSubscriptionStatus method
-        final status = await _subscriptionController.checkSubscriptionStatus(userEmail);
+        final status =
+            await _subscriptionController.checkSubscriptionStatus(userEmail);
         print('Enhanced status check result: $status');
-        
+
         // Extract interval and expiry from enhanced status check if available
         if (status != null && status['interval'] != null) {
           final interval = status['interval'];
           final currentPeriodEnd = status['currentPeriodEnd'];
           print('Enhanced status check - interval: $interval');
           print('Enhanced status check - currentPeriodEnd: $currentPeriodEnd');
-          
+
           setState(() {
             _subscriptionInterval = interval;
             _subscriptionStatus = {'isActive': status['isActive']};
             _isSubscriptionActive = status['isActive'] ?? false;
-            
+
             // Use currentPeriodEnd from backend if available
             if (currentPeriodEnd != null) {
               final backendEnd = _coerceToDateTime(currentPeriodEnd);
@@ -134,29 +136,31 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             }
           });
         }
-        
+
         // If that doesn't work, try the getSubscriptionStatus method
         if (status == null || status['isActive'] != true) {
           print('Enhanced check failed, trying getSubscriptionStatus...');
           try {
-            final fullStatus = await _subscriptionController.getSubscriptionStatus();
+            final fullStatus =
+                await _subscriptionController.getSubscriptionStatus();
             print('Full subscription status: $fullStatus');
-            
+
             if (fullStatus['subscription'] != null) {
               final subscription = fullStatus['subscription'];
               final isActive = subscription['isActive'] ?? false;
-              final interval = subscription['interval'] ?? 'month';  // Get interval from backend
+              final interval = subscription['interval'] ??
+                  'month'; // Get interval from backend
               print('=== DEBUG: Full backend response ===');
               print('Full status: $fullStatus');
               print('Subscription object: $subscription');
               print('Subscription isActive from backend: $isActive');
               print('Subscription interval from backend: $interval');
               print('=====================================');
-              
+
               setState(() {
                 _subscriptionStatus = {'isActive': isActive};
                 _isSubscriptionActive = isActive;
-                _subscriptionInterval = interval;  // Store interval
+                _subscriptionInterval = interval; // Store interval
                 // Prefer backend expiry if available (supports epoch seconds/ms or ISO)
                 final backendEnd = subscription['currentPeriodEnd'];
                 final parsed = _coerceToDateTime(backendEnd);
@@ -171,7 +175,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             print('Error with getSubscriptionStatus: $e');
           }
         }
-        
+
         setState(() {
           _subscriptionStatus = status;
           _isSubscriptionActive = status?['isActive'] ?? false;
@@ -188,7 +192,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
         // If active but expiry not provided, fetch full status once to obtain currentPeriodEnd
         if ((_isSubscriptionActive) && (expiryDate == null)) {
           try {
-            final fullStatus = await _subscriptionController.getSubscriptionStatus();
+            final fullStatus =
+                await _subscriptionController.getSubscriptionStatus();
             if (fullStatus['subscription'] != null) {
               final subscription = fullStatus['subscription'];
               final backendEnd = subscription['currentPeriodEnd'] ??
@@ -205,11 +210,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                 _updateRemainingDays();
               } else {
                 // As a last resort: if active and no expiry provided, assume 30 days from now
-                final fallbackExpiry = DateTime.now().add(const Duration(days: 30));
+                final fallbackExpiry =
+                    DateTime.now().add(const Duration(days: 30));
                 setState(() {
                   expiryDate = fallbackExpiry;
                 });
-                print('No backend expiry found; using fallback expiry: $fallbackExpiry');
+                print(
+                    'No backend expiry found; using fallback expiry: $fallbackExpiry');
                 _updateRemainingDays();
               }
             }
@@ -217,7 +224,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             // ignore silently; UI will continue without expiry
           }
         }
-        
+
         print('Final subscription status: $_subscriptionStatus');
         print('Final isActive: $_isSubscriptionActive');
       }
@@ -294,8 +301,9 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       // Ceil to avoid off-by-one when hours remain in the last day
       remainingDays = (totalSeconds / 86400).ceil();
       if (remainingDays < 0) remainingDays = 0;
-      print('Remaining days recalculated: $remainingDays (expiry: $expiryDate, now: $now)');
-      
+      print(
+          'Remaining days recalculated: $remainingDays (expiry: $expiryDate, now: $now)');
+
       setState(() {});
     }
   }
@@ -315,11 +323,12 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       // Get user email from SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userEmail = prefs.getString('email');
-      
+
       if (userEmail != null) {
         // Fetch latest subscription status from backend
-        final status = await _subscriptionController.checkSubscriptionStatus(userEmail);
-        
+        final status =
+            await _subscriptionController.checkSubscriptionStatus(userEmail);
+
         if (status != null && status['isActive'] == true) {
           // If subscription is now active, show success message
           ScaffoldMessenger.of(context).showSnackBar(
@@ -330,12 +339,11 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
           );
         }
       }
-      
+
       // Reload payment date and recalculate countdown
       await _loadPaymentDate();
       // Reload subscription status
       await _loadSubscriptionStatus();
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -359,7 +367,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       // Try to fix the subscription status
       final result = await _subscriptionController.fixSubscriptionStatus();
       print('Fix subscription status result: $result');
-      
+
       if (result) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -367,13 +375,14 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        
+
         // Reload the subscription status
         await _loadSubscriptionStatus();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to fix subscription status. Please try again.'),
+            content:
+                Text('Failed to fix subscription status. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -400,14 +409,14 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     try {
       // Clear false payment data
       await ClearFalsePaymentData.forceClearPaymentData();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('False payment data cleared successfully!'),
           backgroundColor: Colors.green,
         ),
       );
-      
+
       // Reload the payment date and subscription status
       await _loadPaymentDate();
       await _loadSubscriptionStatus();
@@ -433,7 +442,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     try {
       // Debug the subscription flow
       await SubscriptionFlowDebug.debugSubscriptionStatus();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Check console for subscription flow debug info'),
@@ -441,7 +450,6 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
           duration: Duration(seconds: 3),
         ),
       );
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -481,8 +489,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),
             child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 // Status Card
                 Container(
                   width: double.infinity,
@@ -528,11 +536,15 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        _isSubscriptionActive ? 'Status: ACTIVE' : 'Status: ${_getStatusText()}',
+                        _isSubscriptionActive
+                            ? 'Status: ACTIVE'
+                            : 'Status: ${_getStatusText()}',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: _isSubscriptionActive ? Colors.green : Colors.orange,
+                          color: _isSubscriptionActive
+                              ? Colors.green
+                              : Colors.orange,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -546,9 +558,9 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Validity Card
                 Container(
                   width: double.infinity,
@@ -593,7 +605,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      
+
                       // Remaining Days
                       Container(
                         width: double.infinity,
@@ -617,7 +629,9 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                               ),
                             ),
                             Text(
-                              remainingDays == 1 ? 'Day Remaining' : 'Days Remaining',
+                              remainingDays == 1
+                                  ? 'Day Remaining'
+                                  : 'Days Remaining',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -627,43 +641,47 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                           ],
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Billing Date
                       _buildInfoRow(
                         'Billing Date',
-                        paymentDate != null 
+                        paymentDate != null
                             ? '${paymentDate!.day.toString().padLeft(2, '0')}/${paymentDate!.month.toString().padLeft(2, '0')}/${paymentDate!.year}'
-                            : (_isSubscriptionActive ? 'Awaiting billing info' : 'No payment made'),
+                            : (_isSubscriptionActive
+                                ? 'Awaiting billing info'
+                                : 'No payment made'),
                         Icons.payment,
                       ),
-                      
+
                       const SizedBox(height: 12),
-                      
+
                       // Next Renewal
                       _buildInfoRow(
                         'Next Renewal',
-                        expiryDate != null 
+                        expiryDate != null
                             ? '${expiryDate!.day.toString().padLeft(2, '0')}/${expiryDate!.month.toString().padLeft(2, '0')}/${expiryDate!.year}'
                             : 'No subscription',
                         Icons.event,
                       ),
-                      
+
                       const SizedBox(height: 12),
-                      
+
                       // Validity Period
                       _buildInfoRow(
                         'Validity Period',
-                        _subscriptionInterval == 'year' ? '365 Days (1 Year)' : '30 Days (Monthly)',
+                        _subscriptionInterval == 'year'
+                            ? '365 Days (1 Year)'
+                            : '30 Days (Monthly)',
                         Icons.calendar_today,
                       ),
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Auto-debit Card
                 Container(
                   width: double.infinity,
@@ -716,10 +734,11 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                   final result = await Navigator.push<bool>(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const PaymentMethodSetupScreen(),
+                                      builder: (context) =>
+                                          const PaymentMethodSetupScreen(),
                                     ),
                                   );
-                                  
+
                                   if (result == true) {
                                     // Payment method setup successful, refresh billing status
                                     await _loadBillingStatus();
@@ -736,11 +755,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                 }
                               }
 
-                              final saved = await _subscriptionController.setAutoDebit(value);
+                              final saved = await _subscriptionController
+                                  .setAutoDebit(value);
                               if (saved) {
                                 setState(() {
                                   _autoDebit = value;
-                                  _hasDefaultPaymentMethod = true; // by this point, ensured
+                                  _hasDefaultPaymentMethod =
+                                      true; // by this point, ensured
                                 });
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -756,7 +777,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Failed to update auto-debit. Please try again.'),
+                                      content: Text(
+                                          'Failed to update auto-debit. Please try again.'),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
@@ -774,7 +796,9 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                             : 'No default payment method set. Required to enable auto-debit.',
                         style: TextStyle(
                           fontSize: 12,
-                          color: _hasDefaultPaymentMethod ? Colors.green[700] : Colors.red[700],
+                          color: _hasDefaultPaymentMethod
+                              ? Colors.green[700]
+                              : Colors.red[700],
                         ),
                       ),
                       if (_hasDefaultPaymentMethod) ...[
@@ -786,7 +810,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                               final result = await Navigator.push<bool>(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const PaymentMethodSetupScreen(),
+                                  builder: (context) =>
+                                      const PaymentMethodSetupScreen(),
                                 ),
                               );
                               if (result == true) {
@@ -807,9 +832,9 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Action Buttons
                 if (!_isSubscriptionActive) ...[
                   // Show fix status button only if subscription is not active
@@ -825,13 +850,14 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: isLoading 
+                      child: isLoading
                           ? const SizedBox(
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
                           : const Text('Fix Subscription Status'),
@@ -839,7 +865,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                   ),
                   const SizedBox(height: 12),
                 ],
-                
+
                 // Clear False Payment Data Button (for debugging)
                 if (paymentDate != null && !_isSubscriptionActive) ...[
                   SizedBox(
@@ -854,13 +880,14 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: isLoading 
+                      child: isLoading
                           ? const SizedBox(
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
                           : const Text('Clear False Payment Data'),
@@ -868,7 +895,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                   ),
                   const SizedBox(height: 12),
                 ],
-                
+
                 // Debug Subscription Flow Button
                 SizedBox(
                   width: double.infinity,
@@ -882,13 +909,14 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: isLoading 
+                    child: isLoading
                         ? const SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : const Text('Debug Subscription Flow'),
@@ -914,20 +942,22 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: isLoading ? null : _refreshSubscriptionDetails,
+                        onPressed:
+                            isLoading ? null : _refreshSubscriptionDetails,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: isLoading 
+                        child: isLoading
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : const Text('Refresh'),
@@ -945,16 +975,14 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     ); // Closes Scaffold
   }
 
-
   Future<bool> _showConsentDialog() async {
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Enable Auto-debit?'),
             content: const Text(
-              'I authorize Elevate to automatically charge my saved payment method for each renewal. '
-              'You can turn this off anytime in Subscription settings.'
-            ),
+                'I authorize Elevate to automatically charge my saved payment method for each renewal. '
+                'You can turn this off anytime in Subscription settings.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -982,7 +1010,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
         try {
           DateTime now = DateTime.now();
           int daysSincePayment = now.difference(paymentDate!).inDays;
-          
+
           if (daysSincePayment < 7) {
             return 'Your subscription is active. Payment confirmed and service restored.';
           }
@@ -990,7 +1018,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
           // Fall through to default message
         }
       }
-      
+
       return 'Your subscription is active and working properly.';
     } else {
       // Check if user has made a payment or not

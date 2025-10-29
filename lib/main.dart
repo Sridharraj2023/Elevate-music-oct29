@@ -125,11 +125,11 @@ void main() async {
   ApiConstants.printEnvVars();
   print("Resolved API URL: ${ApiConstants.apiUrl}");
   print("Resolved Stripe Publishable Key: ${ApiConstants.publishKey}");
-  
+
   // Force use production Render server for music and images
   ApiConstants.useProductionServer();
   print("✅ Using production Render server: ${ApiConstants.resolvedApiUrl}");
-  
+
   // Use API URL from ApiConstants (reads from .env or uses default)
   print("Final resolved API URL: ${ApiConstants.resolvedApiUrl}");
 
@@ -145,7 +145,8 @@ void main() async {
     await NotificationService().initialize();
     print("Notification service initialized");
   } catch (e) {
-    print("Notification service initialization failed (Firebase not configured): $e");
+    print(
+        "Notification service initialization failed (Firebase not configured): $e");
   }
 
   runApp(const MyApp());
@@ -194,13 +195,14 @@ class _SplashScreenState extends State<SplashScreen> {
         // Check if user has made a recent payment as a fallback
         String? paymentDateStr = prefs.getString('payment_date');
         bool hasRecentPayment = false;
-        
+
         if (paymentDateStr != null) {
           try {
             DateTime paymentDate = DateTime.parse(paymentDateStr);
             DateTime now = DateTime.now();
             hasRecentPayment = now.difference(paymentDate).inDays < 7;
-            print("Splash check - Payment date: $paymentDateStr, Has recent payment: $hasRecentPayment");
+            print(
+                "Splash check - Payment date: $paymentDateStr, Has recent payment: $hasRecentPayment");
           } catch (e) {
             print("Error parsing payment date during splash: $e");
           }
@@ -208,7 +210,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
         // STRICT SUBSCRIPTION CHECK: Only allow access if user has active subscription OR recent payment
         bool shouldAllowAccess = false;
-        
+
         if (status != null && status['isActive'] == true) {
           // User has active subscription
           shouldAllowAccess = true;
@@ -220,9 +222,10 @@ class _SplashScreenState extends State<SplashScreen> {
         } else {
           // No active subscription and no recent payment - MUST subscribe
           shouldAllowAccess = false;
-          print("Splash: No active subscription and no recent payment - redirecting to subscription page");
+          print(
+              "Splash: No active subscription and no recent payment - redirecting to subscription page");
         }
-        
+
         if (shouldAllowAccess) {
           Get.off(() => const HomePage());
         } else {

@@ -13,7 +13,8 @@ class PasswordStrengthIndicator extends StatelessWidget {
   bool get hasUppercase => password.contains(RegExp(r'[A-Z]'));
   bool get hasLowercase => password.contains(RegExp(r'[a-z]'));
   bool get hasNumber => password.contains(RegExp(r'[0-9]'));
-  bool get hasSpecialChar => password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+  bool get hasSpecialChar =>
+      password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
 
   // Calculate password strength
   int get strengthScore {
@@ -89,10 +90,13 @@ class PasswordStrengthIndicator extends StatelessWidget {
 
         // Password Requirements Checklist
         _buildRequirement('At least 8 characters', hasMinLength, screenWidth),
-        _buildRequirement('One uppercase letter (A-Z)', hasUppercase, screenWidth),
-        _buildRequirement('One lowercase letter (a-z)', hasLowercase, screenWidth),
+        _buildRequirement(
+            'One uppercase letter (A-Z)', hasUppercase, screenWidth),
+        _buildRequirement(
+            'One lowercase letter (a-z)', hasLowercase, screenWidth),
         _buildRequirement('One number (0-9)', hasNumber, screenWidth),
-        _buildRequirement('One special character (!@#\$%^&*)', hasSpecialChar, screenWidth),
+        _buildRequirement(
+            'One special character (!@#\$%^&*)', hasSpecialChar, screenWidth),
       ],
     );
   }
@@ -120,4 +124,3 @@ class PasswordStrengthIndicator extends StatelessWidget {
     );
   }
 }
-

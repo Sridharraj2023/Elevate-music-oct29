@@ -295,7 +295,8 @@ class LoginScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const ForgotPasswordScreen()),
+                                builder: (context) =>
+                                    const ForgotPasswordScreen()),
                           );
                         },
                         child: Text(
@@ -367,7 +368,6 @@ class LoginScreen extends StatelessWidget {
                     ),
 
                     SizedBox(height: screenHeight * 0.02),
-
                   ],
                 ),
               ),

@@ -17,8 +17,8 @@ class SearchBar1 extends StatelessWidget {
                 hintText: "Song, Artist, Album, Genres, Etc",
                 hintStyle: TextStyle(color: Colors.grey),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 14),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
           ),

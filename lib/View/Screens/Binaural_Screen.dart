@@ -71,7 +71,7 @@ class BinauralPage extends StatelessWidget {
     return SubscriptionGuard(
       customMessage: 'Please subscribe to access binaural content',
       child: GradientContainer(
-      child: FutureBuilder<List<Category>>(
+        child: FutureBuilder<List<Category>>(
           future: _binauralController.fetchBinauralCategory(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -84,49 +84,51 @@ class BinauralPage extends StatelessWidget {
             } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
               final types = snapshot.data!;
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                 child: Column(
                   children: [
-                  Expanded(
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 0,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: 2.8,
-                      padding: const EdgeInsets.only(bottom: 120), // Space for audio player
-                      children: types.map((type) {
-                        return RoundedOptionButton(
-                          label: type.name,
-                          onTap: () {
-                            // Handle tap on each binaural type
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => BinauralSongsScreen(
-                            //       typeId: type.id,
-                            //       typeName: type.name,
-                            //     ),
-                            //   ),
-                            // );
-                            Get.to(
-                              BinauralSongsScreen(
-                                typeId: type.id,
-                                typeName: type.name,
-                              ),
-                            );
-                          },
-                        );
-                      }).toList(),
+                    Expanded(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 0,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 2.8,
+                        padding: const EdgeInsets.only(
+                            bottom: 120), // Space for audio player
+                        children: types.map((type) {
+                          return RoundedOptionButton(
+                            label: type.name,
+                            onTap: () {
+                              // Handle tap on each binaural type
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => BinauralSongsScreen(
+                              //       typeId: type.id,
+                              //       typeName: type.name,
+                              //     ),
+                              //   ),
+                              // );
+                              Get.to(
+                                BinauralSongsScreen(
+                                  typeId: type.id,
+                                  typeName: type.name,
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return const Center(child: Text('No binaural types available'));
-          }
-        },
-      ),
+                  ],
+                ),
+              );
+            } else {
+              return const Center(child: Text('No binaural types available'));
+            }
+          },
+        ),
       ),
     );
   }
@@ -154,151 +156,152 @@ class BinauralSongsScreen extends StatelessWidget {
     return SubscriptionGuard(
       customMessage: 'Please subscribe to access binaural songs',
       child: Scaffold(
-      body: GradientContainer(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Get.back(),
-                    child: const Icon(Icons.arrow_back_ios_new,
-                        color: Colors.white),
-                  ),
-                  const SizedBox(width: 46),
-                  Expanded(
-                    child: Text(
-                      typeName,
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 1.2,
+        body: GradientContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 50),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      child: const Icon(Icons.arrow_back_ios_new,
+                          color: Colors.white),
+                    ),
+                    const SizedBox(width: 46),
+                    Expanded(
+                      child: Text(
+                        typeName,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: FutureBuilder<List<MusicItem>>(
-                future: fetchSongsByType(typeId),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'No songs found for "$typeName"',
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                    );
-                  }
-
-                  final songs = snapshot.data!;
-                  return ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 136), // Extra bottom padding for audio player
-                    itemCount: songs.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 16),
-                    itemBuilder: (context, index) {
-                      final song = songs[index];
-                      return GestureDetector(
-                        onTap: () {
-                          Get.back();
-                          log(song.fileUrl);
-                          bottomBarController.isBinauralPlaying.value = true;
-                          bottomBarController.playBinaural(song.fileUrl);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.1),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(16),
-                                        bottomLeft: Radius.circular(16)),
-                                    child: Image.asset(
-                                      'assets/images/music_bg.jpg', // Replace with dynamic image if available
-                                      width: 80,
-                                      height: 80,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              const Icon(Icons.music_note,
-                                                  color: Colors.white,
-                                                  size: 80),
-                                    ),
-                                  ),
-                                  // const Positioned.fill(
-                                  //   child: Center(
-                                  //     child: Icon(Icons.play_circle_fill,
-                                  //         color: Colors.white, size: 36),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        song.title,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        song.artist,
-                                        style: const TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const Icon(Icons.play_circle_fill,
-                                  size: 36, color: Colors.white70),
-                              const SizedBox(
-                                width: 10,
-                              )
-                            ],
-                          ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: FutureBuilder<List<MusicItem>>(
+                  future: fetchSongsByType(typeId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No songs found for "$typeName"',
+                          style: const TextStyle(color: Colors.white70),
                         ),
                       );
-                    },
-                  );
-                },
+                    }
+
+                    final songs = snapshot.data!;
+                    return ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16,
+                          136), // Extra bottom padding for audio player
+                      itemCount: songs.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        final song = songs[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Get.back();
+                            log(song.fileUrl);
+                            bottomBarController.isBinauralPlaying.value = true;
+                            bottomBarController.playBinaural(song.fileUrl);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.1),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(16),
+                                          bottomLeft: Radius.circular(16)),
+                                      child: Image.asset(
+                                        'assets/images/music_bg.jpg', // Replace with dynamic image if available
+                                        width: 80,
+                                        height: 80,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Icon(Icons.music_note,
+                                                    color: Colors.white,
+                                                    size: 80),
+                                      ),
+                                    ),
+                                    // const Positioned.fill(
+                                    //   child: Center(
+                                    //     child: Icon(Icons.play_circle_fill,
+                                    //         color: Colors.white, size: 36),
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          song.title,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          song.artist,
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const Icon(Icons.play_circle_fill,
+                                    size: 36, color: Colors.white70),
+                                const SizedBox(
+                                  width: 10,
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
